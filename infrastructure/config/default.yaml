@@ -1,3 +1,6 @@
+Neptune:
+  InstanceType: 'db.t3.medium'
+  # InstanceType: 'db.r5.large'
 Vpc:
   CidrRange: '10.42.0.0/16'
   MaxAZs: 2
