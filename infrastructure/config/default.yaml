@@ -1,0 +1,5 @@
+Vpc:
+  CidrRange: '10.42.0.0/16'
+  MaxAZs: 2
+  NatGateways: 1
+  UseNatInstances: true

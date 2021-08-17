@@ -1,0 +1,6 @@
+AWSAccountID: '<AWS account id>'
+AWSRegion: 'eu-west-1'
+Prefix: 'neptune-mlops'
+AllowedIpRanges: 
+  - '<CIDR range of allowed public IP addresses>' # AUTO_FILL_MY_IP_ADDRESS
+  - '<CIDR range of allowed public IP addresses>'
