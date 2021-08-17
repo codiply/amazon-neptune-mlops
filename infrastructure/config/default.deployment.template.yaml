@@ -1,6 +1,7 @@
 AWSAccountID: '<AWS account id>'
 AWSRegion: 'eu-west-1'
-Prefix: 'neptune-mlops'
+Project: 'nept-mlops'
+Environment: 'dev'
 AllowedIpRanges: 
   - '<CIDR range of allowed public IP addresses>' # AUTO_FILL_MY_IP_ADDRESS
   - '<CIDR range of allowed public IP addresses>'

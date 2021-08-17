@@ -18,7 +18,8 @@ export class NeptuneDatabase extends cdk.Construct {
     const cluster = new neptune.DatabaseCluster(this, 'neptune-database-cluster', {
       dbClusterName: `${props.deployment.Prefix}-db-cluster`,
       vpc: props.vpc,
-      instanceType: neptune.InstanceType.of(props.config.InstanceType)
+      instanceType: neptune.InstanceType.of(props.config.InstanceType),
+      removalPolicy: cdk.RemovalPolicy.DESTROY
     });
   }
 }
