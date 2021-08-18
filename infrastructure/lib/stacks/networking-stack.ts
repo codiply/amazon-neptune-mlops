@@ -6,7 +6,7 @@ import { DeploymentConfig } from '../config/deployment-config';
 
 export interface NetworkingStackProps extends cdk.StackProps {
   readonly deployment: DeploymentConfig
-  readonly vpc: VpcConfig;
+  readonly vpcConfig: VpcConfig;
 }
 
 export class NetworkingStack extends cdk.Stack {
@@ -17,7 +17,7 @@ export class NetworkingStack extends cdk.Stack {
 
     const networking = new Networking(this, 'networking', {
       deployment: props.deployment,
-      config: props.vpc
+      vpcConfig: props.vpcConfig
     });
 
     this.vpc = networking.vpc;

@@ -5,7 +5,7 @@ import { DeploymentConfig } from '../config/deployment-config';
 
 export interface NetworkingProps {
   readonly deployment: DeploymentConfig;
-  readonly config: VpcConfig;
+  readonly vpcConfig: VpcConfig;
 }
   
 export class Networking extends cdk.Construct {
@@ -14,14 +14,14 @@ export class Networking extends cdk.Construct {
   constructor(scope: cdk.Construct, id: string, props: NetworkingProps) {
     super(scope, id);
 
-    const natGatewayProvider = props.config.UseNatInstances ? 
+    const natGatewayProvider = props.vpcConfig.UseNatInstances ? 
       ec2.NatInstanceProvider.instance({instanceType: new ec2.InstanceType('t3.micro')}) :
       ec2.NatProvider.gateway()
       
     const vpc = new ec2.Vpc(this, `${props.deployment.Prefix}-vpc`, {
-      cidr: props.config.CidrRange,
-      maxAzs: props.config.MaxAZs,
-      natGateways: props.config.NatGateways,
+      cidr: props.vpcConfig.CidrRange,
+      maxAzs: props.vpcConfig.MaxAZs,
+      natGateways: props.vpcConfig.NatGateways,
       natGatewayProvider: natGatewayProvider,
       subnetConfiguration: [
         {
