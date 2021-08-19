@@ -1,6 +1,7 @@
 import * as fs from 'fs'
 import * as path from 'path';
 import { DeploymentConfig, getDeploymentConfig } from './deployment-config';
+import { EcsClusterConfig, getConfig as getEcsClusterConfig } from './sections/ecs-cluster';
 import { NeptuneConfig, getConfig as getNeptuneConfig } from './sections/neptune';
 import { NeptuneNotebookConfig, getConfig as getNeptuneNotebookConfig } from './sections/neptune-notebook';
 import { NeptuneNotebookEfsConfig, getConfig as getNeptuneNotebookEfsConfig } from './sections/neptune-notebook-efs';
@@ -10,6 +11,7 @@ const yaml = require('js-yaml');
 
 export interface Config {
     readonly Deployment: DeploymentConfig;
+    readonly EcsCluster: EcsClusterConfig;
     readonly Neptune: NeptuneConfig;
     readonly NeptuneNotebook: NeptuneNotebookConfig;
     readonly NeptuneNotebookEfs: NeptuneNotebookEfsConfig;
@@ -24,6 +26,7 @@ export function getConfig(environmentName: string, configPath: string): Config
 
     let config: Config = {
         Deployment: getDeploymentConfig(deploymentYaml),
+        EcsCluster: getEcsClusterConfig(getSection(configYaml, 'EcsCluster')),
         Neptune: getNeptuneConfig(getSection(configYaml, 'Neptune')),
         NeptuneNotebook: getNeptuneNotebookConfig(getSection(configYaml, 'NeptuneNotebook')),
         NeptuneNotebookEfs: getNeptuneNotebookEfsConfig(getSection(configYaml, 'NeptuneNotebookEfs')),

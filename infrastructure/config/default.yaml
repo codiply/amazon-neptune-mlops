@@ -1,3 +1,5 @@
+EcsCluster:
+  ContainerInsightsEnabled: true
 Neptune:
   InstanceType: 'db.t3.medium'
   # InstanceType: 'db.r5.large'

@@ -15,7 +15,8 @@ const baseStack = new BaseStack(app, `${config.Deployment.Prefix}-base-stack`, {
   env: env,
   deployment: config.Deployment,
   vpcConfig: config.Vpc,
-  neptuneNotebookEfsConfig: config.NeptuneNotebookEfs
+  neptuneNotebookEfsConfig: config.NeptuneNotebookEfs,
+  ecsClusterConfig: config.EcsCluster
 });
 
 const neptuneDatabaseStack = new NeptuneDatabaseStack(app, `${config.Deployment.Prefix}-neptune-database-stack`, { 
