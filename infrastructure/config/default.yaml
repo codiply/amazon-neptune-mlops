@@ -5,7 +5,7 @@ NeptuneNotebook:
   InstanceType: 'ml.t3.medium'
   Encrypted: false
   EnableAutomaticBackups: false
-  PersistentDirectory: 'persistent'
+  PersistentDirectory: 'Persistent'
 Vpc:
   CidrRange: '10.42.0.0/16'
   MaxAZs: 2

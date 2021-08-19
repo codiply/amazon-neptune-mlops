@@ -57,6 +57,24 @@ export class NeptuneNotebook extends cdk.Construct {
       resources: [`arn:aws:neptune-db:${cdk.Aws.REGION}:${cdk.Aws.ACCOUNT_ID}:${this.props.neptuneCluster.clusterResourceIdentifier}/*`]
     }));
 
+    role.addToPolicy(new iam.PolicyStatement({
+      effect: iam.Effect.ALLOW,
+      actions: [
+        'logs:CreateLogDelivery',
+        'logs:CreateLogGroup',
+        'logs:CreateLogStream',
+        'logs:DeleteLogDelivery',
+        'logs:Describe*',
+        'logs:GetLogDelivery',
+        'logs:GetLogEvents',
+        'logs:ListLogDeliveries',
+        'logs:PutLogEvents',
+        'logs:PutResourcePolicy',
+        'logs:UpdateLogDelivery'
+      ],
+      resources: [`arn:aws:logs:${cdk.Aws.REGION}:${cdk.Aws.ACCOUNT_ID}:log-group:/aws/sagemaker/NotebookInstances:*`]
+    }));
+
     return role;
   }
 
@@ -86,7 +104,7 @@ rm -rf /tmp/graph_notebook
 tar -zxvf /tmp/graph_notebook.tar.gz -C /tmp
 /tmp/graph_notebook/install.sh
 EOF
-mount -t nfs -o nfsvers=4.1,rsize=1048576,wsize=1048576,hard,timeo=600,retrans=2 ${efsDns}:/ ${persistentPath}
+mount -t nfs -o nfsvers=4.1,rsize=1048576,wsize=1048576,hard,timeo=120,retrans=2 ${efsDns}:/ ${persistentPath}
 chmod go+rw ${persistentPath}`)
       }]
     });

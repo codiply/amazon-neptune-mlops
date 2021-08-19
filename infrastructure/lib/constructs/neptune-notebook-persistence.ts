@@ -44,7 +44,7 @@ export class NeptuneNotebookPersistence extends cdk.Construct {
       vpcSubnets: props.vpc.selectSubnets({
         subnetType: ec2.SubnetType.PRIVATE
       }),
-      securityGroup: efsClientSecurityGroup,
+      securityGroup: efsSecurityGroup,
       performanceMode: efs.PerformanceMode.GENERAL_PURPOSE,
       encrypted: props.encrypted,
       enableAutomaticBackups: props.enableAutomaticBackups,
