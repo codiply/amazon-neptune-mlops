@@ -1,0 +1,13 @@
+version: '3.8'
+
+services:
+  jupyter:
+    build: ./docker/
+    restart: always
+    volumes:
+      - ./work/:/home/jovyan/work/
+      - ~/.aws/:/home/jovyan/.aws/:ro
+    ports:
+      - 8888:8888
+    environment:
+      JUPYTER_ENABLE_LAB: 'yes'
