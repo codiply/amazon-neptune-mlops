@@ -9,6 +9,9 @@ export class Constants {
 
 export class ServicePrincipals {
   static get SAGEMAKER(): string {
-      return 'sagemaker.amazonaws.com';
+    return 'sagemaker.amazonaws.com';
   };
+  static get FIREHOSE(): string {
+    return 'firehose.amazonaws.com';
+  }
 }

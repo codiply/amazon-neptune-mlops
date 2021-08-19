@@ -9,6 +9,11 @@ NeptuneNotebook:
 NeptuneNotebookEfs:
   Encrypted: false
   EnableAutomaticBackups: false
+TweetFirehose:
+  BufferingIntervalSeconds: 60
+  BufferingSizeMebibytes: 5
+  DataOutputPrefix: 'raw-tweets'
+  ErrorOutputPrefix: 'raw-tweets-error'
 Vpc:
   CidrRange: '10.42.0.0/16'
   MaxAZs: 2

@@ -4,6 +4,7 @@ import { Config, getConfig } from '../lib/config/config'
 import { NeptuneDatabaseStack } from '../lib/stacks/neptune-database-stack';
 import { NeptuneNotebookStack } from '../lib/stacks/neptune-notebook-stack';
 import { BaseStack } from '../lib/stacks/base-stack';
+import { TweetLoaderStack } from '../lib/stacks/tweet-loader-stack';
 
 const app = new cdk.App();
 let environmentName = app.node.tryGetContext('config');
@@ -35,4 +36,12 @@ new NeptuneNotebookStack(app, `${config.Deployment.Prefix}-neptune-notebook-stac
   databaseClientSecurityGroup: neptuneDatabaseStack.databaseClientSecurityGroup,
   efsClientSecurityGroup: baseStack.neptuneNotebookEfsClientSecurityGroup,
   efsFileSystemId: baseStack.neptuneNotebookEfsFileSystemId,
+});
+
+new TweetLoaderStack(app, `${config.Deployment.Prefix}-tweet-loader-stack`, {
+  env: env,
+  deployment: config.Deployment,
+  tweetFirehoseConfig: config.TweetFirehose,
+  ecsCluster: baseStack.ecsCluster,
+  s3Bucket: baseStack.s3Bucket
 });
