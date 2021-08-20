@@ -15,32 +15,14 @@ export interface EventFirehoseProps {
 }
   
 export class EventFirehose extends cdk.Construct {
+  private props: EventFirehoseProps;
+
   public readonly deliveryStream: firehose.DeliveryStream;
  
   constructor(scope: cdk.Construct, id: string, props: EventFirehoseProps) {
     super(scope, id);
 
-    const role = new iam.Role(this, 'delivery-stream-role', {
-      roleName: `${props.deployment.Prefix}-${props.name}-firehose-role`,
-      assumedBy: new iam.ServicePrincipal(ServicePrincipals.FIREHOSE)
-    })
-    
-    role.addToPolicy(new iam.PolicyStatement({
-      effect: iam.Effect.ALLOW,
-      actions: [
-        's3:AbortMultipartUpload',
-        's3:GetBucketLocation',
-        's3:GetObject',
-        's3:ListBucket',
-        's3:ListBucketMultipartUploads',
-        's3:PutObject'
-      ],
-      resources: [
-        `arn:aws:s3:::${props.s3Bucket.bucketName}`,
-        `arn:aws:s3:::${props.s3Bucket.bucketName}/${props.eventFirehoseConfig.DataOutputPrefix}/*`,
-        `arn:aws:s3:::${props.s3Bucket.bucketName}/${props.eventFirehoseConfig.ErrorOutputPrefix}/*`
-      ]
-    }));
+    const role = this.defineRole();
 
     const datePath = 'year=!{timestamp:yyyy}/month=!{timestamp:MM}/day=!{timestamp:dd}/hour=!{timestamp:HH}';
 
@@ -58,14 +40,44 @@ export class EventFirehose extends cdk.Construct {
     });
     this.deliveryStream = deliveryStream;
 
-    props.s3Bucket.addLifecycleRule({
-      prefix: `${props.eventFirehoseConfig.DataOutputPrefix}/`,
-      expiration: cdk.Duration.days(props.eventFirehoseConfig.DataOutputExpirationDays)
+    this.addS3LifecycleRules();
+  }
+
+  private defineRole(): iam.Role {
+    const role = new iam.Role(this, 'delivery-stream-role', {
+      roleName: `${this.props.deployment.Prefix}-${this.props.name}-firehose-role`,
+      assumedBy: new iam.ServicePrincipal(ServicePrincipals.FIREHOSE)
+    })
+    
+    role.addToPolicy(new iam.PolicyStatement({
+      effect: iam.Effect.ALLOW,
+      actions: [
+        's3:AbortMultipartUpload',
+        's3:GetBucketLocation',
+        's3:GetObject',
+        's3:ListBucket',
+        's3:ListBucketMultipartUploads',
+        's3:PutObject'
+      ],
+      resources: [
+        `arn:aws:s3:::${this.props.s3Bucket.bucketName}`,
+        `arn:aws:s3:::${this.props.s3Bucket.bucketName}/${this.props.eventFirehoseConfig.DataOutputPrefix}/*`,
+        `arn:aws:s3:::${this.props.s3Bucket.bucketName}/${this.props.eventFirehoseConfig.ErrorOutputPrefix}/*`
+      ]
+    }));
+
+    return role;
+  }
+
+  private addS3LifecycleRules(): void {
+    this.props.s3Bucket.addLifecycleRule({
+      prefix: `${this.props.eventFirehoseConfig.DataOutputPrefix}/`,
+      expiration: cdk.Duration.days(this.props.eventFirehoseConfig.DataOutputExpirationDays)
     });
 
-    props.s3Bucket.addLifecycleRule({
-      prefix: `${props.eventFirehoseConfig.ErrorOutputPrefix}/`,
-      expiration: cdk.Duration.days(props.eventFirehoseConfig.ErrorOutputExpirationDays)
+    this.props.s3Bucket.addLifecycleRule({
+      prefix: `${this.props.eventFirehoseConfig.ErrorOutputPrefix}/`,
+      expiration: cdk.Duration.days(this.props.eventFirehoseConfig.ErrorOutputExpirationDays)
     });
   }
 }
