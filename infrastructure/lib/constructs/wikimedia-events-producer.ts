@@ -24,7 +24,8 @@ export class WikimediaEventsProducer extends cdk.Construct {
     const policyStatements = this.defineTaskRolePolicyStatements();
 
     const environment = {
-      DELIVERY_STREAM_NAME: this.props.deliveryStream.deliveryStreamName
+      DELIVERY_STREAM_NAME: this.props.deliveryStream.deliveryStreamName,
+      WIKI_REGEX: this.props.wikimediaEventsProducerConfig.WikiRegex
     };
 
     new EcsService(this, 'tweet-producer-ecs-service', {

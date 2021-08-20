@@ -5,6 +5,8 @@ EventFirehose:
   BufferingSizeMiB: 5
   DataOutputPrefix: 'raw-events'
   ErrorOutputPrefix: 'raw-events-error'
+  DataOutputExpirationDays: 1
+  ErrorOutputExpirationDays: 14
 Neptune:
   InstanceType: 'db.t3.medium'
   # InstanceType: 'db.r5.large'
@@ -20,5 +22,6 @@ Vpc:
   NatGateways: 1
   UseNatInstances: true
 WikimediaEventsProducer:
+  WikiRegex: 'enwiki'
   MemoryLimitMiB: 512
   Cpu: 256

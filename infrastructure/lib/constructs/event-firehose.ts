@@ -56,7 +56,16 @@ export class EventFirehose extends cdk.Construct {
         })
       ]
     });
-
     this.deliveryStream = deliveryStream;
+
+    props.s3Bucket.addLifecycleRule({
+      prefix: `${props.eventFirehoseConfig.DataOutputPrefix}/`,
+      expiration: cdk.Duration.days(props.eventFirehoseConfig.DataOutputExpirationDays)
+    });
+
+    props.s3Bucket.addLifecycleRule({
+      prefix: `${props.eventFirehoseConfig.ErrorOutputPrefix}/`,
+      expiration: cdk.Duration.days(props.eventFirehoseConfig.ErrorOutputExpirationDays)
+    });
   }
 }

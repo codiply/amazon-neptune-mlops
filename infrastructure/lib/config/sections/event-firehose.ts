@@ -6,6 +6,8 @@ export interface EventFirehoseConfig
     readonly BufferingSizeMiB: number;
     readonly DataOutputPrefix: string;
     readonly ErrorOutputPrefix: string;
+    readonly DataOutputExpirationDays: number;
+    readonly ErrorOutputExpirationDays: number;
 }
 
 export function getConfig(object: { [name: string]: any }): EventFirehoseConfig
@@ -14,6 +16,8 @@ export function getConfig(object: { [name: string]: any }): EventFirehoseConfig
       BufferingIntervalSeconds: getNumber(object, 'BufferingIntervalSeconds'),
       BufferingSizeMiB: getNumber(object, 'BufferingSizeMiB'),
       DataOutputPrefix: getString(object, 'DataOutputPrefix'),
-      ErrorOutputPrefix: getString(object, 'ErrorOutputPrefix')
+      ErrorOutputPrefix: getString(object, 'ErrorOutputPrefix'),
+      DataOutputExpirationDays: getNumber(object, 'DataOutputExpirationDays'),
+      ErrorOutputExpirationDays: getNumber(object, 'ErrorOutputExpirationDays')
     };
 }
