@@ -1,5 +1,10 @@
 EcsCluster:
   ContainerInsightsEnabled: true
+EventFirehose:
+  BufferingIntervalSeconds: 60
+  BufferingSizeMiB: 5
+  DataOutputPrefix: 'raw-events'
+  ErrorOutputPrefix: 'raw-events-error'
 Neptune:
   InstanceType: 'db.t3.medium'
   # InstanceType: 'db.r5.large'
@@ -9,11 +14,15 @@ NeptuneNotebook:
 NeptuneNotebookEfs:
   Encrypted: false
   EnableAutomaticBackups: false
-TweetFirehose:
-  BufferingIntervalSeconds: 60
-  BufferingSizeMebibytes: 5
-  DataOutputPrefix: 'raw-tweets'
-  ErrorOutputPrefix: 'raw-tweets-error'
+TweetProducer:
+  Filter: '#aws'
+  MemoryLimitMiB: 512
+  Cpu: 256
+TwitterApi:
+  ConsumerKeySsmParameter: '/twitter-api/consumer-key'
+  ConsumerSecretSsmParameter: '/twitter-api/consumer-secret'
+  AccessTokenSsmParameter: '/twitter-api/access-token'
+  AccessTokenSecretSsmParameter: '/twitter-api/access-token-secret'
 Vpc:
   CidrRange: '10.42.0.0/16'
   MaxAZs: 2

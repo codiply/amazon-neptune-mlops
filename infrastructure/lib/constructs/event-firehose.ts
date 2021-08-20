@@ -4,23 +4,24 @@ import * as firehosedestinations from '@aws-cdk/aws-kinesisfirehose-destinations
 import * as iam from '@aws-cdk/aws-iam';
 import * as s3 from '@aws-cdk/aws-s3';
 import { DeploymentConfig } from '../config/deployment-config';
-import { TweetFirehoseConfig } from '../config/sections/tweet-firehose';
+import { EventFirehoseConfig } from '../config/sections/event-firehose';
 import { ServicePrincipals } from '../constants/constants';
 
-export interface TweetFirehoseProps {
+export interface EventFirehoseProps {
   readonly deployment: DeploymentConfig;
-  readonly tweetFirehoseConfig: TweetFirehoseConfig;
+  readonly name: string;
+  readonly eventFirehoseConfig: EventFirehoseConfig;
   readonly s3Bucket: s3.Bucket;
 }
   
-export class TweetFirehose extends cdk.Construct {
+export class EventFirehose extends cdk.Construct {
   public readonly deliveryStream: firehose.DeliveryStream;
  
-  constructor(scope: cdk.Construct, id: string, props: TweetFirehoseProps) {
+  constructor(scope: cdk.Construct, id: string, props: EventFirehoseProps) {
     super(scope, id);
 
     const role = new iam.Role(this, 'delivery-stream-role', {
-      roleName: `${props.deployment.Prefix}-tweet-firehose-role`,
+      roleName: `${props.deployment.Prefix}-${props.name}-firehose-role`,
       assumedBy: new iam.ServicePrincipal(ServicePrincipals.FIREHOSE)
     })
     
@@ -36,20 +37,20 @@ export class TweetFirehose extends cdk.Construct {
       ],
       resources: [
         `arn:aws:s3:::${props.s3Bucket.bucketName}`,
-        `arn:aws:s3:::${props.s3Bucket.bucketName}/${props.tweetFirehoseConfig.DataOutputPrefix}/*`,
-        `arn:aws:s3:::${props.s3Bucket.bucketName}/${props.tweetFirehoseConfig.ErrorOutputPrefix}/*`
+        `arn:aws:s3:::${props.s3Bucket.bucketName}/${props.eventFirehoseConfig.DataOutputPrefix}/*`,
+        `arn:aws:s3:::${props.s3Bucket.bucketName}/${props.eventFirehoseConfig.ErrorOutputPrefix}/*`
       ]
     }));
 
     const deliveryStream = new firehose.DeliveryStream(this, 'firehose-delivery-stream', {
-      deliveryStreamName: `${props.deployment.Prefix}-tweet-delivery-stream`,
+      deliveryStreamName: `${props.deployment.Prefix}-${props.name}-delivery-stream`,
       destinations: [
         new firehosedestinations.S3Bucket(props.s3Bucket, {
           role: role,
-          bufferingInterval: cdk.Duration.seconds(props.tweetFirehoseConfig.BufferingIntervalSeconds),
-          bufferingSize: cdk.Size.mebibytes(props.tweetFirehoseConfig.BufferingSizeMebibytes),
-          dataOutputPrefix: `${props.tweetFirehoseConfig.DataOutputPrefix}/!{timestamp:yyyy/MM/dd}`,
-          errorOutputPrefix: `${props.tweetFirehoseConfig.ErrorOutputPrefix}/result=!{firehose:error-output-type}/!{timestamp:yyyy/MM/dd}`
+          bufferingInterval: cdk.Duration.seconds(props.eventFirehoseConfig.BufferingIntervalSeconds),
+          bufferingSize: cdk.Size.mebibytes(props.eventFirehoseConfig.BufferingSizeMiB),
+          dataOutputPrefix: `${props.eventFirehoseConfig.DataOutputPrefix}/!{timestamp:yyyy/MM/dd}`,
+          errorOutputPrefix: `${props.eventFirehoseConfig.ErrorOutputPrefix}/result=!{firehose:error-output-type}/!{timestamp:yyyy/MM/dd}`
         })
       ]
     });

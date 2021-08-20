@@ -41,7 +41,9 @@ new NeptuneNotebookStack(app, `${config.Deployment.Prefix}-neptune-notebook-stac
 new TweetLoaderStack(app, `${config.Deployment.Prefix}-tweet-loader-stack`, {
   env: env,
   deployment: config.Deployment,
-  tweetFirehoseConfig: config.TweetFirehose,
+  eventFirehoseConfig: config.EventFirehose,
+  tweetProducerConfig: config.TweetProducer,
+  twitterApiConfig: config.TwitterApi,
   ecsCluster: baseStack.ecsCluster,
   s3Bucket: baseStack.s3Bucket
 });

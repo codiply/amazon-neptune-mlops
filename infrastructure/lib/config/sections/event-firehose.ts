@@ -1,18 +1,18 @@
 import { getNumber, getString } from '../utils'
 
-export interface TweetFirehoseConfig
+export interface EventFirehoseConfig
 {
     readonly BufferingIntervalSeconds: number;
-    readonly BufferingSizeMebibytes: number;
+    readonly BufferingSizeMiB: number;
     readonly DataOutputPrefix: string;
     readonly ErrorOutputPrefix: string;
 }
 
-export function getConfig(object: { [name: string]: any }): TweetFirehoseConfig
+export function getConfig(object: { [name: string]: any }): EventFirehoseConfig
 {
     return {
       BufferingIntervalSeconds: getNumber(object, 'BufferingIntervalSeconds'),
-      BufferingSizeMebibytes: getNumber(object, 'BufferingSizeMebibytes'),
+      BufferingSizeMiB: getNumber(object, 'BufferingSizeMiB'),
       DataOutputPrefix: getString(object, 'DataOutputPrefix'),
       ErrorOutputPrefix: getString(object, 'ErrorOutputPrefix')
     };

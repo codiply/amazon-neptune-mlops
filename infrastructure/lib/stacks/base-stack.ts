@@ -50,7 +50,8 @@ export class BaseStack extends cdk.Stack {
     this.ecsCluster = ecsCluster;
 
     const s3Bucket = new s3.Bucket(this, 's3-bucket', {
-      bucketName: `${props.deployment.Prefix}-${cdk.Aws.ACCOUNT_ID}`
+      bucketName: `${props.deployment.Prefix}-${cdk.Aws.ACCOUNT_ID}`,
+      removalPolicy: cdk.RemovalPolicy.DESTROY
     });
     this.s3Bucket = s3Bucket;
   }
