@@ -4,34 +4,31 @@ import * as s3 from '@aws-cdk/aws-s3';
 import { DeploymentConfig } from '../config/deployment-config';
 import { EventFirehose } from '../constructs/event-firehose';
 import { EventFirehoseConfig } from '../config/sections/event-firehose';
-import { TweetProducer } from '../constructs/tweet-producer';
-import { TwitterApiConfig } from '../config/sections/twitter-api';
-import { TweetProducerConfig } from '../config/sections/tweet-producer';
+import { WikimediaEventsProducerConfig } from '../config/sections/wikimedia-events-producer';
+import { WikimediaEventsProducer } from '../constructs/wikimedia-events-producer';
 
-export interface TweetLoaderStackProps extends cdk.StackProps {
+export interface WikimediaEventsToS3StackProps extends cdk.StackProps {
   readonly deployment: DeploymentConfig;
   readonly eventFirehoseConfig: EventFirehoseConfig;
-  readonly tweetProducerConfig: TweetProducerConfig;
-  readonly twitterApiConfig: TwitterApiConfig;
+  readonly wikimediaEventsProducerConfig: WikimediaEventsProducerConfig;
   readonly ecsCluster: ecs.Cluster
   readonly s3Bucket: s3.Bucket;
 }
 
-export class TweetLoaderStack extends cdk.Stack {
-  constructor(scope: cdk.App, id: string, props: TweetLoaderStackProps) {
+export class WikimediaEventsToS3Stack extends cdk.Stack {
+  constructor(scope: cdk.App, id: string, props: WikimediaEventsToS3StackProps) {
     super(scope, id, props);
 
-    const firehose = new EventFirehose(this, 'tweet-firehose', {
+    const firehose = new EventFirehose(this, 'firehose', {
       deployment: props.deployment,
-      name: 'tweets',
+      name: 'wikimedia-events',
       eventFirehoseConfig: props.eventFirehoseConfig,
       s3Bucket: props.s3Bucket
     });
 
-    const producer = new TweetProducer(this, 'tweet-producer', {
+    const producer = new WikimediaEventsProducer(this, 'producer', {
       deployment: props.deployment,
-      tweetProducerConfig: props.tweetProducerConfig,
-      twitterApiConfig: props.twitterApiConfig,
+      wikimediaEventsProducerConfig: props.wikimediaEventsProducerConfig,
       ecsCluster: props.ecsCluster,
       deliveryStream: firehose.deliveryStream,
     });

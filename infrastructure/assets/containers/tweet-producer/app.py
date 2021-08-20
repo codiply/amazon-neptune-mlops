@@ -21,7 +21,7 @@ access_token_secret = ssm_client.get_parameter(
     WithDecryption=True)['Parameter']['Value']
 
 tweet_filter = os.getenv('TWEET_FILTER')
-delivery_stream_name = os.getenv('DELIVER_STREAM_NAME')
+delivery_stream_name = os.getenv('DELIVERY_STREAM_NAME')
 
 auth = tweepy.OAuthHandler(consumer_key, consumer_secret)
 auth.set_access_token(access_token, access_token_secret)
@@ -45,6 +45,6 @@ class TweetProducer(tweepy.StreamListener):
         print("Error: " + str(status))
 
 if __name__ == "__main__":
-  tweet_producer = TweetProducer(firehose_client)
-  stream = tweepy.Stream(auth=auth, listener=tweet_producer)
-  stream.filter(track=[tweet_filter])
+    tweet_producer = TweetProducer(firehose_client)
+    stream = tweepy.Stream(auth=auth, listener=tweet_producer)
+    stream.filter(track=[tweet_filter])

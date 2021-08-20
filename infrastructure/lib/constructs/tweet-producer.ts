@@ -32,7 +32,7 @@ export class TweetProducer extends cdk.Construct {
       TWITTER_API_ACCESS_TOKEN_SSM_PARAMETER: this.props.twitterApiConfig.AccessTokenSsmParameter,
       TWITTER_API_ACCESS_TOKEN_SECRET_SSM_PARAMETER: this.props.twitterApiConfig.AccessTokenSecretSsmParameter,
       TWEET_FILTER: this.props.tweetProducerConfig.Filter,
-      DELIVER_STREAM_NAME: this.props.deliveryStream.deliveryStreamName
+      DELIVERY_STREAM_NAME: this.props.deliveryStream.deliveryStreamName
     };
 
     new EcsService(this, 'tweet-producer-ecs-service', {

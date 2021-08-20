@@ -42,6 +42,8 @@ export class EventFirehose extends cdk.Construct {
       ]
     }));
 
+    const datePath = 'year=!{timestamp:yyyy}/month=!{timestamp:MM}/day=!{timestamp:dd}/hour=!{timestamp:HH}';
+
     const deliveryStream = new firehose.DeliveryStream(this, 'firehose-delivery-stream', {
       deliveryStreamName: `${props.deployment.Prefix}-${props.name}-delivery-stream`,
       destinations: [
@@ -49,8 +51,8 @@ export class EventFirehose extends cdk.Construct {
           role: role,
           bufferingInterval: cdk.Duration.seconds(props.eventFirehoseConfig.BufferingIntervalSeconds),
           bufferingSize: cdk.Size.mebibytes(props.eventFirehoseConfig.BufferingSizeMiB),
-          dataOutputPrefix: `${props.eventFirehoseConfig.DataOutputPrefix}/!{timestamp:yyyy/MM/dd}`,
-          errorOutputPrefix: `${props.eventFirehoseConfig.ErrorOutputPrefix}/result=!{firehose:error-output-type}/!{timestamp:yyyy/MM/dd}`
+          dataOutputPrefix: `${props.eventFirehoseConfig.DataOutputPrefix}/${datePath}/`,
+          errorOutputPrefix: `${props.eventFirehoseConfig.ErrorOutputPrefix}/result=!{firehose:error-output-type}/${datePath}/`
         })
       ]
     });
