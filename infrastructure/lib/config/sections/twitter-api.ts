@@ -11,9 +11,9 @@ export interface TwitterApiConfig
 export function getConfig(object: { [name: string]: any }): TwitterApiConfig
 {
     return {
-      ConsumerKeySsmParameter: getString(object, 'ConsumerKeySsmParameter'),
-      ConsumerSecretSsmParameter: getString(object, 'ConsumerSecretSsmParameter'),
-      AccessTokenSsmParameter: getString(object, 'AccessTokenSsmParameter'),
-      AccessTokenSecretSsmParameter: getString(object, 'AccessTokenSecretSsmParameter')
+        ConsumerKeySsmParameter: getString(object, 'ConsumerKeySsmParameter'),
+        ConsumerSecretSsmParameter: getString(object, 'ConsumerSecretSsmParameter'),
+        AccessTokenSsmParameter: getString(object, 'AccessTokenSsmParameter'),
+        AccessTokenSecretSsmParameter: getString(object, 'AccessTokenSecretSsmParameter')
     };
 }

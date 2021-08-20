@@ -10,8 +10,8 @@ export interface TweetProducerConfig
 export function getConfig(object: { [name: string]: any }): TweetProducerConfig
 {
     return {
-      Filter: getString(object, 'Filter'),
-      MemoryLimitMiB: getNumber(object, 'MemoryLimitMiB'),
-      Cpu: getNumber(object, 'Cpu')
+        Filter: getString(object, 'Filter'),
+        MemoryLimitMiB: getNumber(object, 'MemoryLimitMiB'),
+        Cpu: getNumber(object, 'Cpu')
     };
 }

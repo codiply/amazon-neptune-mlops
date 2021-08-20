@@ -9,7 +9,7 @@ export interface NeptuneNotebookConfig
 export function getConfig(object: { [name: string]: any }): NeptuneNotebookConfig
 {
     return {
-      InstanceType: getString(object, 'InstanceType'),
-      PersistentDirectory: getString(object, 'PersistentDirectory')
+        InstanceType: getString(object, 'InstanceType'),
+        PersistentDirectory: getString(object, 'PersistentDirectory')
     };
 }

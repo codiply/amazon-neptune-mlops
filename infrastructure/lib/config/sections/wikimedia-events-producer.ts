@@ -10,8 +10,8 @@ export interface WikimediaEventsProducerConfig
 export function getConfig(object: { [name: string]: any }): WikimediaEventsProducerConfig
 {
     return {
-      MemoryLimitMiB: getNumber(object, 'MemoryLimitMiB'),
-      Cpu: getNumber(object, 'Cpu'),
-      WikiRegex: getString(object, 'WikiRegex')
+        MemoryLimitMiB: getNumber(object, 'MemoryLimitMiB'),
+        Cpu: getNumber(object, 'Cpu'),
+        WikiRegex: getString(object, 'WikiRegex')
     };
 }

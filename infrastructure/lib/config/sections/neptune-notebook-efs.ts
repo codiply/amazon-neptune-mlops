@@ -9,7 +9,7 @@ export interface NeptuneNotebookEfsConfig
 export function getConfig(object: { [name: string]: any }): NeptuneNotebookEfsConfig
 {
     return {
-      Encrypted: getBoolean(object, 'Encrypted'),
-      EnableAutomaticBackups: getBoolean(object, 'EnableAutomaticBackups')
+        Encrypted: getBoolean(object, 'Encrypted'),
+        EnableAutomaticBackups: getBoolean(object, 'EnableAutomaticBackups')
     };
 }

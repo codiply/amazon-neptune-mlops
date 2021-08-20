@@ -8,6 +8,6 @@ export interface NeptuneConfig
 export function getConfig(object: { [name: string]: any }): NeptuneConfig
 {
     return {
-      InstanceType: getString(object, 'InstanceType'),
+        InstanceType: getString(object, 'InstanceType'),
     };
 }
