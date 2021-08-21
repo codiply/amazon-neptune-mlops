@@ -11,6 +11,10 @@ import { getSection} from './utils';
 import { WikimediaEventsProducerConfig, getConfig as getWikimediaEventsProducerConfig } from './sections/wikimedia-events-producer';
 import { GremlinCsvLoaderConfig, getConfig as getGremlinCsvLoaderConfig } from './sections/gremlin-csv-loader';
 import { CommonConfig, getConfig as getCommonConfig } from './sections/common';
+import { WikimediaEventsConfig, getConfig as getWikimediaEventsConfig } from './sections/wikimedia-events';
+import { TweetsProducerConfig, getConfig as getTweetsProducerConfig } from './sections/tweets-producer';
+import { TwitterApiConfig, getConfig as getTwitterApiConfig } from './sections/twitter-api';
+import { TweetsConfig, getConfig as getTweetsConfig } from './sections/tweets';
 const yaml = require('js-yaml');
 
 export interface Config {
@@ -23,6 +27,10 @@ export interface Config {
     readonly NeptuneNotebook: NeptuneNotebookConfig;
     readonly NeptuneNotebookEfs: NeptuneNotebookEfsConfig;
     readonly Vpc: VpcConfig;
+    readonly Tweets: TweetsConfig;
+    readonly TweetsProducer: TweetsProducerConfig;
+    readonly TwitterApi: TwitterApiConfig;
+    readonly WikimediaEvents: WikimediaEventsConfig;
     readonly WikimediaEventsProducer: WikimediaEventsProducerConfig;
 }
 export function getConfig(environmentName: string, configPath: string): Config
@@ -41,7 +49,11 @@ export function getConfig(environmentName: string, configPath: string): Config
         Neptune: getNeptuneConfig(getSection(configYaml, 'Neptune')),
         NeptuneNotebook: getNeptuneNotebookConfig(getSection(configYaml, 'NeptuneNotebook')),
         NeptuneNotebookEfs: getNeptuneNotebookEfsConfig(getSection(configYaml, 'NeptuneNotebookEfs')),
+        Tweets: getTweetsConfig(getSection(configYaml, 'Tweets')),
+        TweetsProducer: getTweetsProducerConfig(getSection(configYaml, 'TweetsProducer')),
+        TwitterApi: getTwitterApiConfig(getSection(configYaml, 'TwitterApi')),
         Vpc: getVpcConfig(getSection(configYaml, 'Vpc')),
+        WikimediaEvents: getWikimediaEventsConfig(getSection(configYaml, 'WikimediaEvents')),
         WikimediaEventsProducer: getWikimediaEventsProducerConfig(getSection(configYaml, 'WikimediaEventsProducer'))
     };
 

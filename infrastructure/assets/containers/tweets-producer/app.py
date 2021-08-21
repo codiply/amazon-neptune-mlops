@@ -1,6 +1,7 @@
 import os
 import json
 import logging
+import sys
 
 import boto3
 import tweepy
@@ -23,14 +24,14 @@ access_token_secret = ssm_client.get_parameter(
     Name=os.getenv('TWITTER_API_ACCESS_TOKEN_SECRET_SSM_PARAMETER'),
     WithDecryption=True)['Parameter']['Value']
 
-tweet_filter = os.getenv('TWEET_FILTER')
+tweets_filter = os.getenv('TWEETS_FILTER')
 delivery_stream_name = os.getenv('DELIVERY_STREAM_NAME')
 
 auth = tweepy.OAuthHandler(consumer_key, consumer_secret)
 auth.set_access_token(access_token, access_token_secret)
 
 
-class TweetProducer(tweepy.StreamListener):
+class TweetsProducer(tweepy.StreamListener):
     def __init__(self, firehose_client):
         self.firehose_client = firehose_client
 
@@ -48,6 +49,6 @@ class TweetProducer(tweepy.StreamListener):
         logging.error(str(status))
 
 if __name__ == "__main__":
-    tweet_producer = TweetProducer(firehose_client)
-    stream = tweepy.Stream(auth=auth, listener=tweet_producer)
-    stream.filter(track=[tweet_filter])
+    tweets_producer = TweetsProducer(firehose_client)
+    stream = tweepy.Stream(auth=auth, listener=tweets_producer)
+    stream.filter(track=[tweets_filter])

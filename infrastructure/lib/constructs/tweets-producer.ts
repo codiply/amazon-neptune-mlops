@@ -5,23 +5,23 @@ import * as firehose from '@aws-cdk/aws-kinesisfirehose';
 import * as kms from '@aws-cdk/aws-kms';
 import { DeploymentConfig } from '../config/deployment-config';
 import { TwitterApiConfig } from '../config/sections/twitter-api';
-import { TweetProducerConfig } from '../config/sections/tweet-producer';
+import { TweetsProducerConfig } from '../config/sections/tweets-producer';
 import { EcsService } from './ecs-service';
 import { CommonConfig } from '../config/sections/common';
 
-export interface TweetProducerProps {
+export interface TweetsProducerProps {
   readonly deployment: DeploymentConfig;
   readonly commonConfig: CommonConfig;
-  readonly tweetProducerConfig: TweetProducerConfig;
+  readonly tweetsProducerConfig: TweetsProducerConfig;
   readonly twitterApiConfig: TwitterApiConfig;
   readonly ecsCluster: ecs.Cluster;
   readonly deliveryStream: firehose.DeliveryStream;
 }
   
-export class TweetProducer extends cdk.Construct {
-  private readonly props: TweetProducerProps;
+export class TweetsProducer extends cdk.Construct {
+  private readonly props: TweetsProducerProps;
 
-  constructor(scope: cdk.Construct, id: string, props: TweetProducerProps) {
+  constructor(scope: cdk.Construct, id: string, props: TweetsProducerProps) {
     super(scope, id);
 
     this.props = props;
@@ -33,18 +33,18 @@ export class TweetProducer extends cdk.Construct {
       TWITTER_API_CONSUMER_SECRET_SSM_PARAMETER: this.props.twitterApiConfig.ConsumerSecretSsmParameter,
       TWITTER_API_ACCESS_TOKEN_SSM_PARAMETER: this.props.twitterApiConfig.AccessTokenSsmParameter,
       TWITTER_API_ACCESS_TOKEN_SECRET_SSM_PARAMETER: this.props.twitterApiConfig.AccessTokenSecretSsmParameter,
-      TWEET_FILTER: this.props.tweetProducerConfig.Filter,
+      TWEETS_FILTER: this.props.tweetsProducerConfig.Filter,
       DELIVERY_STREAM_NAME: this.props.deliveryStream.deliveryStreamName
     };
 
-    new EcsService(this, 'tweet-producer-ecs-service', {
+    new EcsService(this, 'tweets-producer-ecs-service', {
       deployment: props.deployment,
       ecsCluster: props.ecsCluster,
-      serviceName: 'tweet-producer',
-      memoryLimitMiB: props.tweetProducerConfig.MemoryLimitMiB,
-      cpu: props.tweetProducerConfig.Cpu,
+      serviceName: 'tweets-producer',
+      memoryLimitMiB: props.tweetsProducerConfig.MemoryLimitMiB,
+      cpu: props.tweetsProducerConfig.Cpu,
       policyStatements: policyStatements,
-      containerImageDirectory: './assets/containers/tweet-producer/',
+      containerImageDirectory: './assets/containers/tweets-producer/',
       environment: environment,
       desiredCount: 1,
       enableXray: props.commonConfig.XRayEnabled

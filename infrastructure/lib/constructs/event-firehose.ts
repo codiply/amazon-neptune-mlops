@@ -12,6 +12,7 @@ export interface EventFirehoseProps {
   readonly name: string;
   readonly eventFirehoseConfig: EventFirehoseConfig;
   readonly s3Bucket: s3.Bucket;
+  readonly pathPrefix: string;
 }
   
 export class EventFirehose extends cdk.Construct {
@@ -35,8 +36,8 @@ export class EventFirehose extends cdk.Construct {
           role: role,
           bufferingInterval: cdk.Duration.seconds(props.eventFirehoseConfig.BufferingIntervalSeconds),
           bufferingSize: cdk.Size.mebibytes(props.eventFirehoseConfig.BufferingSizeMiB),
-          dataOutputPrefix: `${props.eventFirehoseConfig.DataOutputPrefix}/${datePath}/`,
-          errorOutputPrefix: `${props.eventFirehoseConfig.ErrorOutputPrefix}/result=!{firehose:error-output-type}/${datePath}/`
+          dataOutputPrefix: `${props.pathPrefix}/${props.eventFirehoseConfig.DataOutputPrefix}/${datePath}/`,
+          errorOutputPrefix: `${props.pathPrefix}/${props.eventFirehoseConfig.ErrorOutputPrefix}/result=!{firehose:error-output-type}/${datePath}/`
         })
       ]
     });
@@ -63,8 +64,8 @@ export class EventFirehose extends cdk.Construct {
       ],
       resources: [
         `arn:aws:s3:::${this.props.s3Bucket.bucketName}`,
-        `arn:aws:s3:::${this.props.s3Bucket.bucketName}/${this.props.eventFirehoseConfig.DataOutputPrefix}/*`,
-        `arn:aws:s3:::${this.props.s3Bucket.bucketName}/${this.props.eventFirehoseConfig.ErrorOutputPrefix}/*`
+        `arn:aws:s3:::${this.props.s3Bucket.bucketName}/${this.props.pathPrefix}/${this.props.eventFirehoseConfig.DataOutputPrefix}/*`,
+        `arn:aws:s3:::${this.props.s3Bucket.bucketName}/${this.props.pathPrefix}/${this.props.eventFirehoseConfig.ErrorOutputPrefix}/*`
       ]
     }));
 
@@ -73,12 +74,12 @@ export class EventFirehose extends cdk.Construct {
 
   private addS3LifecycleRules(): void {
     this.props.s3Bucket.addLifecycleRule({
-      prefix: `${this.props.eventFirehoseConfig.DataOutputPrefix}/`,
+      prefix: `${this.props.pathPrefix}/${this.props.eventFirehoseConfig.DataOutputPrefix}/`,
       expiration: cdk.Duration.days(this.props.eventFirehoseConfig.DataOutputExpirationDays)
     });
 
     this.props.s3Bucket.addLifecycleRule({
-      prefix: `${this.props.eventFirehoseConfig.ErrorOutputPrefix}/`,
+      prefix: `${this.props.pathPrefix}/${this.props.eventFirehoseConfig.ErrorOutputPrefix}/`,
       expiration: cdk.Duration.days(this.props.eventFirehoseConfig.ErrorOutputExpirationDays)
     });
   }

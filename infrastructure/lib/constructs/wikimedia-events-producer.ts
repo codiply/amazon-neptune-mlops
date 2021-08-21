@@ -30,7 +30,7 @@ export class WikimediaEventsProducer extends cdk.Construct {
       WIKI_REGEX: this.props.wikimediaEventsProducerConfig.WikiRegex
     };
 
-    new EcsService(this, 'tweet-producer-ecs-service', {
+    new EcsService(this, 'tweets-producer-ecs-service', {
       deployment: props.deployment,
       ecsCluster: props.ecsCluster,
       serviceName: 'wikimedia-events-producer',

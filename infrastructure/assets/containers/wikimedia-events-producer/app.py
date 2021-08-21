@@ -2,6 +2,7 @@ import os
 import json
 import logging
 import re
+import sys
 
 import boto3
 from sseclient import SSEClient as EventSource
