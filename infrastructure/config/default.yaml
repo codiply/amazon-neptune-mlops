@@ -5,8 +5,6 @@ EcsCluster:
 EventFirehose:
   BufferingIntervalSeconds: 60
   BufferingSizeMiB: 5
-  DataOutputPrefix: 'raw-events'
-  ErrorOutputPrefix: 'raw-events-error'
   DataOutputExpirationDays: 1
   ErrorOutputExpirationDays: 14
 GremlinCsvLoader:

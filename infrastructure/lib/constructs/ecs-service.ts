@@ -4,7 +4,7 @@ import * as ec2 from '@aws-cdk/aws-ec2';
 import * as iam from '@aws-cdk/aws-iam';
 import * as logs from '@aws-cdk/aws-logs';
 import { DeploymentConfig } from '../config/deployment-config';
-import { ServicePrincipals } from '../constants/constants';
+import { ServicePrincipals } from '../constants/service-principals';
 
 export interface EcsServiceProps {
   readonly deployment: DeploymentConfig;

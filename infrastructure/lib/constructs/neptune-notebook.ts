@@ -4,7 +4,8 @@ import * as iam from '@aws-cdk/aws-iam';
 import * as neptune from '@aws-cdk/aws-neptune';
 import * as sagemaker from '@aws-cdk/aws-sagemaker';
 import { DeploymentConfig } from '../config/deployment-config';
-import { Constants, ServicePrincipals } from '../constants/constants';
+import { Constants } from '../constants/constants';
+import { ServicePrincipals } from '../constants/service-principals';
 import { NeptuneNotebookConfig } from '../config/sections/neptune-notebook';
 
 export interface NeptuneNotebookProps {

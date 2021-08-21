@@ -9,7 +9,7 @@ import { NeptuneConfig } from '../config/sections/neptune';
 import { NeptuneDatabase } from '../constructs/neptune-database';
 import { GremlinCsvLoaderConfig } from '../config/sections/gremlin-csv-loader';
 import { GremlinCsvLoader } from '../constructs/gremlin-csv-loader';
-import { ServicePrincipals } from '../constants/constants';
+import { ServicePrincipals } from '../constants/service-principals';
 import { CommonConfig } from '../config/sections/common';
 
 export interface NeptuneDatabaseStackProps extends cdk.StackProps {
