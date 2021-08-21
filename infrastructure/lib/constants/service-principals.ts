@@ -8,6 +8,9 @@ export class ServicePrincipals {
   static get FIREHOSE(): string {
     return 'firehose.amazonaws.com';
   }
+  static get LAMBDA(): string {
+    return 'lambda.amazonaws.com';
+  }
   static get RDS(): string {
     return 'rds.amazonaws.com';
   }

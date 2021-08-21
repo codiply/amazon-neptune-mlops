@@ -4,7 +4,6 @@ import * as s3 from '@aws-cdk/aws-s3';
 import { DeploymentConfig } from '../config/deployment-config';
 import { EventFirehose } from '../constructs/event-firehose';
 import { EventFirehoseConfig } from '../config/sections/event-firehose';
-import { WikimediaEventsProducer } from '../constructs/wikimedia-events-producer';
 import { CommonConfig } from '../config/sections/common';
 import { TweetsConfig } from '../config/sections/tweets';
 import { TweetsProducerConfig } from '../config/sections/tweets-producer';
@@ -28,19 +27,21 @@ export class TweetsToS3Stack extends cdk.Stack {
 
     const firehose = new EventFirehose(this, 'firehose', {
       deployment: props.deployment,
-      name: 'tweets',
+      eventsName: 'tweets',
       eventFirehoseConfig: props.eventFirehoseConfig,
       s3Bucket: props.s3Bucket,
       pathPrefix: props.tweetsConfig.S3PathPrefix
     });
 
-    const producer = new TweetsProducer(this, 'producer', {
-      deployment: props.deployment,
-      commonConfig: props.commonConfig,
-      tweetsProducerConfig: props.tweetsProducerConfig,
-      twitterApiConfig: props.twitterApiConfig,
-      ecsCluster: props.ecsCluster,
-      deliveryStream: firehose.deliveryStream,
-    });
+    if (props.tweetsProducerConfig.Enabled) {
+      const producer = new TweetsProducer(this, 'producer', {
+        deployment: props.deployment,
+        commonConfig: props.commonConfig,
+        tweetsProducerConfig: props.tweetsProducerConfig,
+        twitterApiConfig: props.twitterApiConfig,
+        ecsCluster: props.ecsCluster,
+        deliveryStream: firehose.deliveryStream,
+      });
+    }
   }
 }

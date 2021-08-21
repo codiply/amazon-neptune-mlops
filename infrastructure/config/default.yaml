@@ -7,6 +7,10 @@ EventFirehose:
   BufferingSizeMiB: 5
   DataOutputExpirationDays: 1
   ErrorOutputExpirationDays: 14
+GremlinCsv:
+  ExpirationDays: 2
+GremlinCsvConverter:
+  LambdaTimeoutSeconds: 60
 GremlinCsvLoader:
   Enabled: true
   MemoryLimitMiB: 512
@@ -23,6 +27,7 @@ NeptuneNotebookEfs:
 Tweets:
   S3PathPrefix: 'tweets'
 TweetsProducer:
+  Enabled: true
   Filter: 'aws'
   MemoryLimitMiB: 512
   Cpu: 256
@@ -39,6 +44,7 @@ Vpc:
 WikimediaEvents:
   S3PathPrefix: 'wikimedia-events'
 WikimediaEventsProducer:
+  Enabled: false
   WikiRegex: 'enwiki'
   MemoryLimitMiB: 512
   Cpu: 256

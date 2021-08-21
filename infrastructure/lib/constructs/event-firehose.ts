@@ -10,7 +10,7 @@ import { S3Paths } from '../constants/s3-paths';
 
 export interface EventFirehoseProps {
   readonly deployment: DeploymentConfig;
-  readonly name: string;
+  readonly eventsName: string;
   readonly eventFirehoseConfig: EventFirehoseConfig;
   readonly s3Bucket: s3.Bucket;
   readonly pathPrefix: string;
@@ -18,7 +18,7 @@ export interface EventFirehoseProps {
   
 export class EventFirehose extends cdk.Construct {
   private props: EventFirehoseProps;
-
+  
   public readonly deliveryStream: firehose.DeliveryStream;
  
   constructor(scope: cdk.Construct, id: string, props: EventFirehoseProps) {
@@ -31,7 +31,7 @@ export class EventFirehose extends cdk.Construct {
     const datePath = 'year=!{timestamp:yyyy}/month=!{timestamp:MM}/day=!{timestamp:dd}/hour=!{timestamp:HH}';
 
     const deliveryStream = new firehose.DeliveryStream(this, 'firehose-delivery-stream', {
-      deliveryStreamName: `${props.deployment.Prefix}-${props.name}-delivery-stream`,
+      deliveryStreamName: `${props.deployment.Prefix}-${props.eventsName}-delivery-stream`,
       destinations: [
         new firehosedestinations.S3Bucket(props.s3Bucket, {
           role: role,
@@ -49,7 +49,7 @@ export class EventFirehose extends cdk.Construct {
 
   private defineRole(): iam.Role {
     const role = new iam.Role(this, 'delivery-stream-role', {
-      roleName: `${this.props.deployment.Prefix}-${this.props.name}-firehose-role`,
+      roleName: `${this.props.deployment.Prefix}-${this.props.eventsName}-firehose-role`,
       assumedBy: new iam.ServicePrincipal(ServicePrincipals.FIREHOSE)
     });
     

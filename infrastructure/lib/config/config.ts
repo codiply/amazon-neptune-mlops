@@ -15,6 +15,8 @@ import { WikimediaEventsConfig, getConfig as getWikimediaEventsConfig } from './
 import { TweetsProducerConfig, getConfig as getTweetsProducerConfig } from './sections/tweets-producer';
 import { TwitterApiConfig, getConfig as getTwitterApiConfig } from './sections/twitter-api';
 import { TweetsConfig, getConfig as getTweetsConfig } from './sections/tweets';
+import { GremlinCsvConverterConfig, getConfig as getGremlinCsvConverterConfig } from './sections/gremlin-csv-converter';
+import { GremlinCsvConfig, getConfig as getGremlinCsvConfig } from './sections/gremlin-csv';
 const yaml = require('js-yaml');
 
 export interface Config {
@@ -22,6 +24,8 @@ export interface Config {
     readonly Common: CommonConfig;
     readonly EcsCluster: EcsClusterConfig;    
     readonly EventFirehose: EventFirehoseConfig;
+    readonly GremlinCsv: GremlinCsvConfig;
+    readonly GremlinCsvConverter: GremlinCsvConverterConfig;
     readonly GremlinCsvLoader: GremlinCsvLoaderConfig;
     readonly Neptune: NeptuneConfig;
     readonly NeptuneNotebook: NeptuneNotebookConfig;
@@ -45,6 +49,8 @@ export function getConfig(environmentName: string, configPath: string): Config
         Common: getCommonConfig(getSection(configYaml, 'Common')),
         EcsCluster: getEcsClusterConfig(getSection(configYaml, 'EcsCluster')),
         EventFirehose: getEventFirehoseConfig(getSection(configYaml, 'EventFirehose')),
+        GremlinCsv: getGremlinCsvConfig(getSection(configYaml, 'GremlinCsv')),
+        GremlinCsvConverter: getGremlinCsvConverterConfig(getSection(configYaml, 'GremlinCsvConverter')),
         GremlinCsvLoader: getGremlinCsvLoaderConfig(getSection(configYaml, 'GremlinCsvLoader')),
         Neptune: getNeptuneConfig(getSection(configYaml, 'Neptune')),
         NeptuneNotebook: getNeptuneNotebookConfig(getSection(configYaml, 'NeptuneNotebook')),

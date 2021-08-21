@@ -4,6 +4,7 @@ import * as ecs from '@aws-cdk/aws-ecs';
 import * as iam from '@aws-cdk/aws-iam';
 import * as neptune from '@aws-cdk/aws-neptune';
 import * as s3 from '@aws-cdk/aws-s3';
+import * as sqs from '@aws-cdk/aws-sqs';
 import { DeploymentConfig } from '../config/deployment-config';
 import { NeptuneConfig } from '../config/sections/neptune';
 import { NeptuneDatabase } from '../constructs/neptune-database';
@@ -27,6 +28,7 @@ export class NeptuneDatabaseStack extends cdk.Stack {
 
   public readonly cluster: neptune.DatabaseCluster;
   public readonly databaseClientSecurityGroup: ec2.SecurityGroup;
+  public readonly loaderQueue: sqs.Queue;
 
   constructor(scope: cdk.App, id: string, props: NeptuneDatabaseStackProps) {
     super(scope, id, props);
@@ -44,7 +46,7 @@ export class NeptuneDatabaseStack extends cdk.Stack {
     this.cluster = neptuneDatabase.cluster;
     this.databaseClientSecurityGroup = neptuneDatabase.databaseClientSecurityGroup;
 
-    new GremlinCsvLoader(this, 'gremlin-dsv-loader', {
+    const gremlinCsvLoader = new GremlinCsvLoader(this, 'gremlin-dsv-loader', {
       deployment: props.deployment,
       commonConfig: props.commonConfig,
       gremlinCsvLoaderConfig: props.gremlinCsvLoaderConfig,
@@ -54,6 +56,7 @@ export class NeptuneDatabaseStack extends cdk.Stack {
       databaseClusterEndpoint: neptuneDatabase.cluster.clusterEndpoint,
       loaderRole: loaderRole
     });
+    this.loaderQueue = gremlinCsvLoader.queue;
   }
 
   private defineLoaderRole(): iam.Role {

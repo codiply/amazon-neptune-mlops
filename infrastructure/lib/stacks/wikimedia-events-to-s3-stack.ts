@@ -25,18 +25,20 @@ export class WikimediaEventsToS3Stack extends cdk.Stack {
 
     const firehose = new EventFirehose(this, 'firehose', {
       deployment: props.deployment,
-      name: 'wikimedia-events',
+      eventsName: 'wikimedia-events',
       eventFirehoseConfig: props.eventFirehoseConfig,
       s3Bucket: props.s3Bucket,
       pathPrefix: props.wikimediaEventsConfig.S3PathPrefix
     });
 
-    const producer = new WikimediaEventsProducer(this, 'producer', {
-      deployment: props.deployment,
-      commonConfig: props.commonConfig,
-      wikimediaEventsProducerConfig: props.wikimediaEventsProducerConfig,
-      ecsCluster: props.ecsCluster,
-      deliveryStream: firehose.deliveryStream,
-    });
+    if (props.wikimediaEventsProducerConfig.Enabled) {
+      const producer = new WikimediaEventsProducer(this, 'producer', {
+        deployment: props.deployment,
+        commonConfig: props.commonConfig,
+        wikimediaEventsProducerConfig: props.wikimediaEventsProducerConfig,
+        ecsCluster: props.ecsCluster,
+        deliveryStream: firehose.deliveryStream,
+      });
+    }
   }
 }
