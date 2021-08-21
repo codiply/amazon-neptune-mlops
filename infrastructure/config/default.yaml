@@ -27,7 +27,7 @@ NeptuneNotebookEfs:
 Tweets:
   S3PathPrefix: 'tweets'
 TweetsProducer:
-  Enabled: true
+  Enabled: false
   Filter: 'aws'
   MemoryLimitMiB: 512
   Cpu: 256
@@ -44,7 +44,7 @@ Vpc:
 WikimediaEvents:
   S3PathPrefix: 'wikimedia-events'
 WikimediaEventsProducer:
-  Enabled: false
+  Enabled: true
   WikiRegex: 'enwiki'
   MemoryLimitMiB: 512
   Cpu: 256

@@ -13,6 +13,7 @@ import { GremlinCsvConfig } from '../config/sections/gremlin-csv';
 import { PythonFunction, PythonLayerVersion } from '@aws-cdk/aws-lambda-python';
 import { GremlinCsvConverterConfig } from '../config/sections/gremlin-csv-converter';
 import { LambdaLayersVersions } from '../stacks/lambda-layers';
+import { ResourceArn } from '../constants/resource-arn';
 
 export interface GremlinCsvConverterProps {
   readonly deployment: DeploymentConfig;
@@ -43,14 +44,10 @@ export class GremlinCsvConverter extends cdk.Construct {
 
     const func = this.defineLambdaFunction(role, environment)
 
-    this.props.s3Bucket.addEventNotification(
-      s3.EventType.OBJECT_CREATED, 
-      new s3n.LambdaDestination(func), 
-      { prefix: `${this.props.pathPrefix}/${S3Paths.RAW_EVENTS}` });
-    // func.addEventSource(new S3EventSource(this.props.s3Bucket, {
-    //   events: [ s3.EventType.OBJECT_CREATED ],
-    //   filters: [ { prefix: `${this.props.pathPrefix}/${S3Paths.RAW_EVENTS}` }]
-    // }));
+    s3.Bucket.fromBucketArn(this, "bucket-from-arn", 
+      ResourceArn.bucket(this.props.deployment)).addObjectCreatedNotification(
+        new s3n.LambdaDestination(func), { 
+          prefix: `${this.props.pathPrefix}/${S3Paths.RAW_EVENTS}` });
 
     this.addS3LifecycleRules();
   }
@@ -70,9 +67,9 @@ export class GremlinCsvConverter extends cdk.Construct {
         's3:List*'
       ],
       resources: [
-        `arn:aws:s3:::${this.props.s3Bucket.bucketName}`,
-        `arn:aws:s3:::${this.props.s3Bucket.bucketName}/${this.props.pathPrefix}/${S3Paths.RAW_EVENTS}/*`,
-        `arn:aws:s3:::${this.props.s3Bucket.bucketName}/${this.props.pathPrefix}/${S3Paths.RAW_EVENTS_FIREHOSE_ERROR}/*`
+        ResourceArn.bucket(this.props.deployment),
+        `${ResourceArn.bucket(this.props.deployment)}/${this.props.pathPrefix}/${S3Paths.RAW_EVENTS}/*`,
+        `${ResourceArn.bucket(this.props.deployment)}/${this.props.pathPrefix}/${S3Paths.RAW_EVENTS_FIREHOSE_ERROR}/*`
       ]
     }));
 
@@ -82,7 +79,7 @@ export class GremlinCsvConverter extends cdk.Construct {
         's3:PutObject',
       ],
       resources: [
-        `arn:aws:s3:::${this.props.s3Bucket.bucketName}/${this.props.pathPrefix}/${S3Paths.GREMLIN_CSV}/*`
+        `${ResourceArn.bucket(this.props.deployment)}/${this.props.pathPrefix}/${S3Paths.GREMLIN_CSV}/*`
       ]
     }));
 

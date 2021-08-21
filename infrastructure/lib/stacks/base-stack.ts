@@ -8,6 +8,7 @@ import { Networking } from '../constructs/networking';
 import { VpcConfig } from '../config/sections/vpc';
 import { NeptuneNotebookEfsConfig } from '../config/sections/neptune-notebook-efs';
 import { EcsClusterConfig } from '../config/sections/ecs-cluster';
+import { ResourceNames } from '../constants/resource-names';
 
 export interface BaseStackProps extends cdk.StackProps {
   readonly deployment: DeploymentConfig;
@@ -50,7 +51,7 @@ export class BaseStack extends cdk.Stack {
     this.ecsCluster = ecsCluster;
 
     const s3Bucket = new s3.Bucket(this, 's3-bucket', {
-      bucketName: `${props.deployment.Prefix}-${cdk.Aws.ACCOUNT_ID}`,
+      bucketName: ResourceNames.bucketName(props.deployment),
       removalPolicy: cdk.RemovalPolicy.DESTROY
     });
     this.s3Bucket = s3Bucket;

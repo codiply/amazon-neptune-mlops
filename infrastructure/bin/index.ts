@@ -6,8 +6,9 @@ import { NeptuneNotebookStack } from '../lib/stacks/neptune-notebook-stack';
 import { BaseStack } from '../lib/stacks/base-stack';
 import { WikimediaEventsToS3Stack } from '../lib/stacks/wikimedia-events-to-s3-stack';
 import { TweetsToS3Stack } from '../lib/stacks/tweets-to-s3-stack';
-import { TweetsGremlinCsvConverterStack } from '../lib/stacks/tweets-gremlin-csv-converter';
+import { WikimediaEventsGremlinCsvConverterStack } from '../lib/stacks/wikimedia-events-gremlin-csv-converter';
 import { LambdaLayersStack } from '../lib/stacks/lambda-layers';
+import { TweetsGremlinCsvConverterStack } from '../lib/stacks/tweets-gremlin-csv-converter copy';
 
 const app = new cdk.App();
 let environmentName = app.node.tryGetContext('config');
@@ -83,4 +84,16 @@ new WikimediaEventsToS3Stack(app, `${config.Deployment.Prefix}-wikimedia-events-
   wikimediaEventsProducerConfig: config.WikimediaEventsProducer,
   ecsCluster: baseStack.ecsCluster,
   s3Bucket: baseStack.s3Bucket
+});
+
+new WikimediaEventsGremlinCsvConverterStack(app, `${config.Deployment.Prefix}-wikimedia-events-gremlin-csv-converter`, {
+  env: env,
+  deployment: config.Deployment,
+  commonConfig: config.Common,
+  gremlinCsvConfig: config.GremlinCsv,
+  gremlinCsvConverterConfig: config.GremlinCsvConverter,
+  wikimediaEventsConfig: config.WikimediaEvents,
+  s3Bucket: baseStack.s3Bucket,
+  loaderQueue: neptuneDatabaseStack.loaderQueue,
+  lambdaLayersVersions: lambdaLayers.versions
 });

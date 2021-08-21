@@ -7,6 +7,7 @@ import { DeploymentConfig } from '../config/deployment-config';
 import { EventFirehoseConfig } from '../config/sections/event-firehose';
 import { ServicePrincipals } from '../constants/service-principals';
 import { S3Paths } from '../constants/s3-paths';
+import { ResourceArn } from '../constants/resource-arn';
 
 export interface EventFirehoseProps {
   readonly deployment: DeploymentConfig;
@@ -64,9 +65,9 @@ export class EventFirehose extends cdk.Construct {
         's3:PutObject'
       ],
       resources: [
-        `arn:aws:s3:::${this.props.s3Bucket.bucketName}`,
-        `arn:aws:s3:::${this.props.s3Bucket.bucketName}/${this.props.pathPrefix}/${S3Paths.RAW_EVENTS}/*`,
-        `arn:aws:s3:::${this.props.s3Bucket.bucketName}/${this.props.pathPrefix}/${S3Paths.RAW_EVENTS_FIREHOSE_ERROR}/*`
+        ResourceArn.bucket(this.props.deployment),
+        `${ResourceArn.bucket(this.props.deployment)}/${this.props.pathPrefix}/${S3Paths.RAW_EVENTS}/*`,
+        `${ResourceArn.bucket(this.props.deployment)}/${this.props.pathPrefix}/${S3Paths.RAW_EVENTS_FIREHOSE_ERROR}/*`
       ]
     }));
 
