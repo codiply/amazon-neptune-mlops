@@ -14,6 +14,7 @@ import { PythonFunction, PythonLayerVersion } from '@aws-cdk/aws-lambda-python';
 import { GremlinCsvConverterConfig } from '../config/sections/gremlin-csv-converter';
 import { LambdaLayersVersions } from '../stacks/lambda-layers';
 import { ResourceArn } from '../constants/resource-arn';
+import { ResourceNames } from '../constants/resource-names';
 
 export interface GremlinCsvConverterProps {
   readonly deployment: DeploymentConfig;
@@ -30,16 +31,24 @@ export interface GremlinCsvConverterProps {
   
 export class GremlinCsvConverter extends cdk.Construct {
   private props: GremlinCsvConverterProps;
+  private inputPath: string;
+  private outputPath: string;
 
   constructor(scope: cdk.Construct, id: string, props: GremlinCsvConverterProps) {
     super(scope, id);
 
     this.props = props;
 
+    this.inputPath = `${this.props.pathPrefix}/${S3Paths.RAW_EVENTS}`;
+    this.outputPath = `${this.props.pathPrefix}/${S3Paths.GREMLIN_CSV}`;
+
     const role = this.defineLambdaExecutionRole();
 
     const environment = {
-
+      LOADER_QUEUE_URL: props.loaderQueue.queueUrl,
+      S3_BUCKET: ResourceNames.bucketName(props.deployment),
+      INPUT_PATH: this.inputPath,
+      OUTPUT_PATH: this.outputPath
     };
 
     const func = this.defineLambdaFunction(role, environment)
@@ -68,8 +77,7 @@ export class GremlinCsvConverter extends cdk.Construct {
       ],
       resources: [
         ResourceArn.bucket(this.props.deployment),
-        `${ResourceArn.bucket(this.props.deployment)}/${this.props.pathPrefix}/${S3Paths.RAW_EVENTS}/*`,
-        `${ResourceArn.bucket(this.props.deployment)}/${this.props.pathPrefix}/${S3Paths.RAW_EVENTS_FIREHOSE_ERROR}/*`
+        `${ResourceArn.bucket(this.props.deployment)}/${this.inputPath}/*`
       ]
     }));
 
@@ -79,7 +87,7 @@ export class GremlinCsvConverter extends cdk.Construct {
         's3:PutObject',
       ],
       resources: [
-        `${ResourceArn.bucket(this.props.deployment)}/${this.props.pathPrefix}/${S3Paths.GREMLIN_CSV}/*`
+        `${ResourceArn.bucket(this.props.deployment)}/${this.outputPath}/*`
       ]
     }));
 
@@ -112,7 +120,7 @@ export class GremlinCsvConverter extends cdk.Construct {
 
   private addS3LifecycleRules(): void {
     this.props.s3Bucket.addLifecycleRule({
-      prefix: `${this.props.pathPrefix}/${S3Paths.RAW_EVENTS}/`,
+      prefix: `${this.inputPath}/`,
       expiration: cdk.Duration.days(this.props.gremlinCsvConfig.ExpirationDays)
     });
   }
