@@ -33,7 +33,9 @@ export class EcsService extends cdk.Construct {
 
     const extraEnvironment = {
       "SERVICE_NAME": props.serviceName,
-      "AWS_XRAY_DAEMON_ADDRESS": `127.0.0.1:${xrayPort}`
+      "AWS_XRAY_DAEMON_ADDRESS": `127.0.0.1:${xrayPort}`,
+      "AWS_REGION": cdk.Aws.REGION,
+      "AWS_ACCOUNT_ID": cdk.Aws.ACCOUNT_ID
     };
     const mergedEnvironment = {...props.environment, ...extraEnvironment};
 

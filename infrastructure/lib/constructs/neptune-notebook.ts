@@ -95,7 +95,7 @@ mkdir ${persistentPath}`)
 set -e
 sudo -u ec2-user -i <<'EOF'
 echo "export GRAPH_NOTEBOOK_AUTH_MODE=DEFAULT" >> ~/.bashrc
-echo "export GRAPH_NOTEBOOK_HOST=${this.props.neptuneCluster.clusterEndpoint}" >> ~/.bashrc
+echo "export GRAPH_NOTEBOOK_HOST=${this.props.neptuneCluster.clusterEndpoint.hostname}" >> ~/.bashrc
 echo "export GRAPH_NOTEBOOK_PORT=${Constants.NEPTUNE_PORT}" >> ~/.bashrc
 echo "export NEPTUNE_LOAD_FROM_S3_ROLE_ARN=''" >> ~/.bashrc
 echo "export AWS_REGION=${cdk.Aws.REGION}" >> ~/.bashrc

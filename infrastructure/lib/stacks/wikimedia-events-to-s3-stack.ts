@@ -6,9 +6,11 @@ import { EventFirehose } from '../constructs/event-firehose';
 import { EventFirehoseConfig } from '../config/sections/event-firehose';
 import { WikimediaEventsProducerConfig } from '../config/sections/wikimedia-events-producer';
 import { WikimediaEventsProducer } from '../constructs/wikimedia-events-producer';
+import { CommonConfig } from '../config/sections/common';
 
 export interface WikimediaEventsToS3StackProps extends cdk.StackProps {
   readonly deployment: DeploymentConfig;
+  readonly commonConfig: CommonConfig;
   readonly eventFirehoseConfig: EventFirehoseConfig;
   readonly wikimediaEventsProducerConfig: WikimediaEventsProducerConfig;
   readonly ecsCluster: ecs.Cluster
@@ -28,6 +30,7 @@ export class WikimediaEventsToS3Stack extends cdk.Stack {
 
     const producer = new WikimediaEventsProducer(this, 'producer', {
       deployment: props.deployment,
+      commonConfig: props.commonConfig,
       wikimediaEventsProducerConfig: props.wikimediaEventsProducerConfig,
       ecsCluster: props.ecsCluster,
       deliveryStream: firehose.deliveryStream,

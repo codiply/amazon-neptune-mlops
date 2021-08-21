@@ -1,3 +1,5 @@
+Common:
+  XRayEnabled: false
 EcsCluster:
   ContainerInsightsEnabled: true
 EventFirehose:
@@ -7,6 +9,10 @@ EventFirehose:
   ErrorOutputPrefix: 'raw-events-error'
   DataOutputExpirationDays: 1
   ErrorOutputExpirationDays: 14
+GremlinCsvLoader:
+  Enabled: true
+  MemoryLimitMiB: 512
+  Cpu: 256
 Neptune:
   InstanceType: 'db.t3.medium'
   # InstanceType: 'db.r5.large'

@@ -23,8 +23,12 @@ const baseStack = new BaseStack(app, `${config.Deployment.Prefix}-base-stack`, {
 const neptuneDatabaseStack = new NeptuneDatabaseStack(app, `${config.Deployment.Prefix}-neptune-database-stack`, { 
   env: env,
   deployment: config.Deployment,
+  commonConfig: config.Common,
   neptuneConfig: config.Neptune,
-  vpc: baseStack.vpc
+  gremlinCsvLoaderConfig: config.GremlinCsvLoader,
+  vpc: baseStack.vpc,
+  ecsCluster: baseStack.ecsCluster,
+  s3Bucket: baseStack.s3Bucket
 });
 
 new NeptuneNotebookStack(app, `${config.Deployment.Prefix}-neptune-notebook-stack`, {
@@ -41,6 +45,7 @@ new NeptuneNotebookStack(app, `${config.Deployment.Prefix}-neptune-notebook-stac
 new WikimediaEventsToS3Stack(app, `${config.Deployment.Prefix}-wikimedia-events-to-s3`, {
   env: env,
   deployment: config.Deployment,
+  commonConfig: config.Common,
   eventFirehoseConfig: config.EventFirehose,
   wikimediaEventsProducerConfig: config.WikimediaEventsProducer,
   ecsCluster: baseStack.ecsCluster,

@@ -17,6 +17,9 @@ export class ServicePrincipals {
   static get FIREHOSE(): string {
     return 'firehose.amazonaws.com';
   }
+  static get RDS(): string {
+    return 'rds.amazonaws.com';
+  }
   static get SAGEMAKER(): string {
     return 'sagemaker.amazonaws.com';
   }

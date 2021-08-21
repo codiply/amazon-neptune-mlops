@@ -1,8 +1,11 @@
 import os
 import json
+import logging
 
 import boto3
 import tweepy
+
+logging.basicConfig(stream=sys.stdout, level=logging.INFO)
 
 ssm_client = boto3.client('ssm')
 firehose_client = boto3.client('firehose')
@@ -42,7 +45,7 @@ class TweetProducer(tweepy.StreamListener):
         return True
     
     def on_error(self, status):
-        print("Error: " + str(status))
+        logging.error(str(status))
 
 if __name__ == "__main__":
     tweet_producer = TweetProducer(firehose_client)

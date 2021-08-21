@@ -7,9 +7,11 @@ import { DeploymentConfig } from '../config/deployment-config';
 import { TwitterApiConfig } from '../config/sections/twitter-api';
 import { TweetProducerConfig } from '../config/sections/tweet-producer';
 import { EcsService } from './ecs-service';
+import { CommonConfig } from '../config/sections/common';
 
 export interface TweetProducerProps {
   readonly deployment: DeploymentConfig;
+  readonly commonConfig: CommonConfig;
   readonly tweetProducerConfig: TweetProducerConfig;
   readonly twitterApiConfig: TwitterApiConfig;
   readonly ecsCluster: ecs.Cluster;
@@ -45,7 +47,7 @@ export class TweetProducer extends cdk.Construct {
       containerImageDirectory: './assets/containers/tweet-producer/',
       environment: environment,
       desiredCount: 1,
-      enableXray: true
+      enableXray: props.commonConfig.XRayEnabled
     });
   }
 

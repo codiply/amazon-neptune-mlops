@@ -22,6 +22,8 @@ export class EventFirehose extends cdk.Construct {
   constructor(scope: cdk.Construct, id: string, props: EventFirehoseProps) {
     super(scope, id);
 
+    this.props = props;
+
     const role = this.defineRole();
 
     const datePath = 'year=!{timestamp:yyyy}/month=!{timestamp:MM}/day=!{timestamp:dd}/hour=!{timestamp:HH}';
@@ -47,7 +49,7 @@ export class EventFirehose extends cdk.Construct {
     const role = new iam.Role(this, 'delivery-stream-role', {
       roleName: `${this.props.deployment.Prefix}-${this.props.name}-firehose-role`,
       assumedBy: new iam.ServicePrincipal(ServicePrincipals.FIREHOSE)
-    })
+    });
     
     role.addToPolicy(new iam.PolicyStatement({
       effect: iam.Effect.ALLOW,

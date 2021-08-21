@@ -5,9 +5,11 @@ import * as firehose from '@aws-cdk/aws-kinesisfirehose';
 import { DeploymentConfig } from '../config/deployment-config';
 import { EcsService } from './ecs-service';
 import { WikimediaEventsProducerConfig } from '../config/sections/wikimedia-events-producer';
+import { CommonConfig } from '../config/sections/common';
 
 export interface WikimediaEventsProducerProps {
   readonly deployment: DeploymentConfig;
+  readonly commonConfig: CommonConfig;
   readonly wikimediaEventsProducerConfig: WikimediaEventsProducerConfig;
   readonly ecsCluster: ecs.Cluster;
   readonly deliveryStream: firehose.DeliveryStream;
@@ -38,7 +40,7 @@ export class WikimediaEventsProducer extends cdk.Construct {
       containerImageDirectory: './assets/containers/wikimedia-events-producer/',
       environment: environment,
       desiredCount: 1,
-      enableXray: true
+      enableXray: props.commonConfig.XRayEnabled
     });
   }
 

@@ -9,12 +9,16 @@ import { EventFirehoseConfig, getConfig as getEventFirehoseConfig } from './sect
 import { VpcConfig, getConfig as getVpcConfig } from './sections/vpc';
 import { getSection} from './utils';
 import { WikimediaEventsProducerConfig, getConfig as getWikimediaEventsProducerConfig } from './sections/wikimedia-events-producer';
+import { GremlinCsvLoaderConfig, getConfig as getGremlinCsvLoaderConfig } from './sections/gremlin-csv-loader';
+import { CommonConfig, getConfig as getCommonConfig } from './sections/common';
 const yaml = require('js-yaml');
 
 export interface Config {
     readonly Deployment: DeploymentConfig;
+    readonly Common: CommonConfig;
     readonly EcsCluster: EcsClusterConfig;    
     readonly EventFirehose: EventFirehoseConfig;
+    readonly GremlinCsvLoader: GremlinCsvLoaderConfig;
     readonly Neptune: NeptuneConfig;
     readonly NeptuneNotebook: NeptuneNotebookConfig;
     readonly NeptuneNotebookEfs: NeptuneNotebookEfsConfig;
@@ -30,8 +34,10 @@ export function getConfig(environmentName: string, configPath: string): Config
 
     let config: Config = {
         Deployment: getDeploymentConfig(deploymentYaml),
+        Common: getCommonConfig(getSection(configYaml, 'Common')),
         EcsCluster: getEcsClusterConfig(getSection(configYaml, 'EcsCluster')),
         EventFirehose: getEventFirehoseConfig(getSection(configYaml, 'EventFirehose')),
+        GremlinCsvLoader: getGremlinCsvLoaderConfig(getSection(configYaml, 'GremlinCsvLoader')),
         Neptune: getNeptuneConfig(getSection(configYaml, 'Neptune')),
         NeptuneNotebook: getNeptuneNotebookConfig(getSection(configYaml, 'NeptuneNotebook')),
         NeptuneNotebookEfs: getNeptuneNotebookEfsConfig(getSection(configYaml, 'NeptuneNotebookEfs')),

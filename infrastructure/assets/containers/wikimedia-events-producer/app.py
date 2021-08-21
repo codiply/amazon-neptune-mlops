@@ -1,11 +1,13 @@
 import os
 import json
+import logging
 import re
 
 import boto3
 from sseclient import SSEClient as EventSource
 
-ssm_client = boto3.client('ssm')
+logging.basicConfig(stream=sys.stdout, level=logging.INFO)
+
 firehose_client = boto3.client('firehose')
 
 wikimedia_events_url = 'https://stream.wikimedia.org/v2/stream/recentchange'
