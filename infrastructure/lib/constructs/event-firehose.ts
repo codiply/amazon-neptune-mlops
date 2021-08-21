@@ -2,12 +2,14 @@ import * as cdk from '@aws-cdk/core';
 import * as firehose from '@aws-cdk/aws-kinesisfirehose';
 import * as firehosedestinations from '@aws-cdk/aws-kinesisfirehose-destinations';
 import * as iam from '@aws-cdk/aws-iam';
+import * as lambda from '@aws-cdk/aws-lambda';
 import * as s3 from '@aws-cdk/aws-s3';
 import { DeploymentConfig } from '../config/deployment-config';
 import { EventFirehoseConfig } from '../config/sections/event-firehose';
 import { ServicePrincipals } from '../constants/service-principals';
 import { S3Paths } from '../constants/s3-paths';
 import { ResourceArn } from '../constants/resource-arn';
+import { PythonFunction } from '@aws-cdk/aws-lambda-python';
 
 export interface EventFirehoseProps {
   readonly deployment: DeploymentConfig;
@@ -31,10 +33,21 @@ export class EventFirehose extends cdk.Construct {
 
     const datePath = 'year=!{timestamp:yyyy}/month=!{timestamp:MM}/day=!{timestamp:dd}/hour=!{timestamp:HH}';
 
+    const lambdaFunction = new PythonFunction(this, 'processor-lambda-function', {
+      functionName: `${props.deployment.Prefix}-${props.eventsName}-delivery-stream-processor`,
+      entry: `./assets/lambdas/event-firehose-processor`,
+        runtime: lambda.Runtime.PYTHON_3_8,
+        index: 'lambda-handler.py',
+        handler: 'main',
+    });
+
+    const lambdaProcessor = new firehose.LambdaFunctionProcessor(lambdaFunction);
+
     const deliveryStream = new firehose.DeliveryStream(this, 'firehose-delivery-stream', {
       deliveryStreamName: `${props.deployment.Prefix}-${props.eventsName}-delivery-stream`,
       destinations: [
         new firehosedestinations.S3Bucket(props.s3Bucket, {
+          processor: lambdaProcessor,
           role: role,
           bufferingInterval: cdk.Duration.seconds(props.eventFirehoseConfig.BufferingIntervalSeconds),
           bufferingSize: cdk.Size.mebibytes(props.eventFirehoseConfig.BufferingSizeMiB),
