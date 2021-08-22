@@ -5,16 +5,16 @@ import { ServicePrincipals } from '../../constants/service-principals';
 import { ResourceArn } from '../../constants/resource-arn';
 import { ServiceIamRole } from './service-iam-role';
 
-export interface DataBrewRoleProps {
+export interface GlueRoleProps {
   readonly deployment: DeploymentConfig;
 }
   
-export class DataBrewRole extends cdk.Construct {
+export class GlueRole extends cdk.Construct {
   public readonly role: iam.Role;
  
-  constructor(scope: cdk.Construct, id: string, props: DataBrewRoleProps) {
+  constructor(scope: cdk.Construct, id: string, props: GlueRoleProps) {
     super(scope, id);
-
+    
     const policyStatements = [
       new iam.PolicyStatement({
         effect: iam.Effect.ALLOW,
@@ -30,10 +30,13 @@ export class DataBrewRole extends cdk.Construct {
 
     const serviceIamRole = new ServiceIamRole(this, 'service-iam-role', {
       deployment: props.deployment,
-      shortName: 'databrew',
-      fullName: 'AWS Glue DataBrew',
-      principalService: ServicePrincipals.DATABREW,
-      policyStatements: policyStatements
+      shortName: 'glue',
+      fullName: 'AWS Glue',
+      principalService: ServicePrincipals.GLUE,
+      policyStatements: policyStatements,
+      awsManagedPolicyNames: [
+        'service-role/AWSGlueServiceRole'
+      ]
     });
 
     this.role = serviceIamRole.role;

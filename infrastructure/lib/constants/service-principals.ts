@@ -11,6 +11,9 @@ export class ServicePrincipals {
   static get FIREHOSE(): string {
     return 'firehose.amazonaws.com';
   }
+  static get GLUE(): string {
+    return 'glue.amazonaws.com';
+  }
   static get LAMBDA(): string {
     return 'lambda.amazonaws.com';
   }
