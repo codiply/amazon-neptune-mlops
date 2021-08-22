@@ -9,6 +9,7 @@ import { TweetsToS3Stack } from '../lib/stacks/tweets-to-s3-stack';
 import { WikimediaEventsGremlinCsvConverterStack } from '../lib/stacks/wikimedia-events-gremlin-csv-converter';
 import { LambdaLayersStack } from '../lib/stacks/lambda-layers';
 import { TweetsGremlinCsvConverterStack } from '../lib/stacks/tweets-gremlin-csv-converter copy';
+import { IamRolesStack } from '../lib/stacks/iam-roles';
 
 const app = new cdk.App();
 let environmentName = app.node.tryGetContext('config');
@@ -25,6 +26,11 @@ const baseStack = new BaseStack(app, `${config.Deployment.Prefix}-base-stack`, {
 });
 
 const lambdaLayers = new LambdaLayersStack(app, `${config.Deployment.Prefix}-lambda-layers-stack`, {
+  env: env,
+  deployment: config.Deployment
+});
+
+const iamRoles = new IamRolesStack(app, `${config.Deployment.Prefix}-iam-roles-stack`, {
   env: env,
   deployment: config.Deployment
 });

@@ -1,4 +1,7 @@
 export class ServicePrincipals {
+  static get DATABREW(): string {
+    return 'databrew.amazonaws.com';
+  }
   static get ECS(): string {
     return 'ecs.amazonaws.com';
   }
