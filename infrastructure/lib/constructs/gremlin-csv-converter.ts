@@ -10,7 +10,7 @@ import { CommonConfig } from '../config/sections/common';
 import { ServicePrincipals } from '../constants/service-principals';
 import { S3Paths } from '../constants/s3-paths';
 import { GremlinCsvConfig } from '../config/sections/gremlin-csv';
-import { PythonFunction, PythonLayerVersion } from '@aws-cdk/aws-lambda-python';
+import { PythonFunction } from '@aws-cdk/aws-lambda-python';
 import { GremlinCsvConverterConfig } from '../config/sections/gremlin-csv-converter';
 import { LambdaLayersVersions } from '../stacks/lambda-layers';
 import { ResourceArn } from '../constants/resource-arn';
@@ -25,8 +25,8 @@ export interface GremlinCsvConverterProps {
   readonly pathPrefix: string;
   readonly s3Bucket: s3.Bucket;
   readonly loaderQueue: sqs.Queue;
+  readonly convertersLayerAssetPath: string;
   readonly lambdaLayersVersions: LambdaLayersVersions;
-  readonly policyStatements?: iam.PolicyStatement[];
 }
   
 export class GremlinCsvConverter extends cdk.Construct {
@@ -51,7 +51,13 @@ export class GremlinCsvConverter extends cdk.Construct {
       OUTPUT_PATH: this.outputPath
     };
 
-    const func = this.defineLambdaFunction(role, environment)
+    const convertersLayer = new lambda.LayerVersion(this, 'converters', {
+      layerVersionName: `${this.props.deployment.Prefix}-${this.props.eventsName}-gremlin-csv-converter`,
+      code: lambda.Code.fromAsset(props.convertersLayerAssetPath),
+      compatibleRuntimes: [lambda.Runtime.PYTHON_3_8]
+    });
+
+    const func = this.defineLambdaFunction(role, convertersLayer, environment)
 
     s3.Bucket.fromBucketArn(this, "bucket-from-arn", 
       ResourceArn.bucket(this.props.deployment)).addObjectCreatedNotification(
@@ -91,25 +97,33 @@ export class GremlinCsvConverter extends cdk.Construct {
       ]
     }));
 
-    if (this.props.policyStatements) {
-      this.props.policyStatements.forEach(statement => role.addToPolicy(statement));
-    }
+    role.addToPolicy(new iam.PolicyStatement({
+      effect: iam.Effect.ALLOW,
+      actions: [
+        'sqs:SendMessage',
+      ],
+      resources: [
+        this.props.loaderQueue.queueArn
+      ]
+    }));
 
     return role;
   }
 
   private defineLambdaFunction(
     role: iam.Role, 
+    convertersLayer: lambda.ILayerVersion,
     environment: {[key: string]: string;}): PythonFunction {
+
       const func = new PythonFunction(this, `lambda-function`, {
         functionName: `${this.props.deployment.Prefix}-${this.props.eventsName}-gremlin-csv-converter`,
-        description: `Converts ${this.props.eventsName} to Gremlin CSV and submits for loading for ${this.props.deployment.Prefix} in ${this.props.deployment.Environment}`,
+        description: `Converts ${this.props.eventsName} to Gremlin CSV and submits for loading for ${this.props.deployment.Project} in ${this.props.deployment.Environment}`,
         entry: `./assets/lambdas/gremlin-csv-converter`,
         runtime: lambda.Runtime.PYTHON_3_8,
         index: 'lambda-handler.py',
         handler: 'main',
         environment: environment,
-        layers: [this.props.lambdaLayersVersions.xray],
+        layers: [this.props.lambdaLayersVersions.xray, convertersLayer],
         role: role,
         timeout: cdk.Duration.seconds(this.props.gremlinCsvConverter.LambdaTimeoutSeconds),
         logRetention: logs.RetentionDays.THREE_DAYS,

@@ -36,9 +36,9 @@ export class EventFirehose extends cdk.Construct {
     const lambdaFunction = new PythonFunction(this, 'processor-lambda-function', {
       functionName: `${props.deployment.Prefix}-${props.eventsName}-delivery-stream-processor`,
       entry: `./assets/lambdas/event-firehose-processor`,
-        runtime: lambda.Runtime.PYTHON_3_8,
-        index: 'lambda-handler.py',
-        handler: 'main',
+      runtime: lambda.Runtime.PYTHON_3_8,
+      index: 'lambda-handler.py',
+      handler: 'main',
     });
 
     const lambdaProcessor = new firehose.LambdaFunctionProcessor(lambdaFunction);

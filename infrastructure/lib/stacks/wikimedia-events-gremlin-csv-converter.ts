@@ -22,15 +22,8 @@ export interface WikimediaEventsGremlinCsvConverterProps extends cdk.StackProps 
 }
 
 export class WikimediaEventsGremlinCsvConverterStack extends cdk.Stack {
-  private props: WikimediaEventsGremlinCsvConverterProps;
-
   constructor(scope: cdk.App, id: string, props: WikimediaEventsGremlinCsvConverterProps) {
     super(scope, id, props);
-
-    this.props = props;
-
-    const policyStatements = this.definePolicyStatements()
-
     new GremlinCsvConverter(this, 'gremlin-csv-converter', {
       deployment: props.deployment,
       commonConfig: props.commonConfig,
@@ -40,12 +33,8 @@ export class WikimediaEventsGremlinCsvConverterStack extends cdk.Stack {
       pathPrefix: props.wikimediaEventsConfig.S3PathPrefix,
       s3Bucket: props.s3Bucket,
       loaderQueue: props.loaderQueue,
-      policyStatements: policyStatements,
+      convertersLayerAssetPath: './assets/lambda-layers/gremlin-csv-converter-wikimedia-events',
       lambdaLayersVersions: props.lambdaLayersVersions 
     });
-  }
-
-  private definePolicyStatements(): iam.PolicyStatement[] {
-    return [];
   }
 }

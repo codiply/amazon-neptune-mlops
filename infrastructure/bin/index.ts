@@ -8,7 +8,7 @@ import { WikimediaEventsToS3Stack } from '../lib/stacks/wikimedia-events-to-s3-s
 import { TweetsToS3Stack } from '../lib/stacks/tweets-to-s3-stack';
 import { WikimediaEventsGremlinCsvConverterStack } from '../lib/stacks/wikimedia-events-gremlin-csv-converter';
 import { LambdaLayersStack } from '../lib/stacks/lambda-layers';
-import { TweetsGremlinCsvConverterStack } from '../lib/stacks/tweets-gremlin-csv-converter copy';
+import { TweetsGremlinCsvConverterStack } from '../lib/stacks/tweets-gremlin-csv-converter';
 import { IamRolesStack } from '../lib/stacks/iam-roles';
 
 const app = new cdk.App();

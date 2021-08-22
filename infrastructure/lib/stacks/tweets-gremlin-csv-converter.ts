@@ -29,8 +29,6 @@ export class TweetsGremlinCsvConverterStack extends cdk.Stack {
 
     this.props = props;
 
-    const policyStatements = this.definePolicyStatements()
-
     new GremlinCsvConverter(this, 'gremlin-csv-converter', {
       deployment: props.deployment,
       commonConfig: props.commonConfig,
@@ -40,12 +38,8 @@ export class TweetsGremlinCsvConverterStack extends cdk.Stack {
       pathPrefix: props.tweetsConfig.S3PathPrefix,
       s3Bucket: props.s3Bucket,
       loaderQueue: props.loaderQueue,
-      policyStatements: policyStatements,
+      convertersLayerAssetPath: './assets/lambda-layers/gremlin-csv-converter-tweets',
       lambdaLayersVersions: props.lambdaLayersVersions 
     });
-  }
-
-  private definePolicyStatements(): iam.PolicyStatement[] {
-    return [];
   }
 }
