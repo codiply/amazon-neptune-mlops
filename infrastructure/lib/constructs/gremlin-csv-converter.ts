@@ -10,7 +10,6 @@ import { CommonConfig } from '../config/sections/common';
 import { ServicePrincipals } from '../constants/service-principals';
 import { S3Paths } from '../constants/s3-paths';
 import { GremlinCsvConfig } from '../config/sections/gremlin-csv';
-import { PythonFunction } from '@aws-cdk/aws-lambda-python';
 import { GremlinCsvConverterConfig } from '../config/sections/gremlin-csv-converter';
 import { LambdaLayersVersions } from '../stacks/lambda-layers';
 import { ResourceArn } from '../constants/resource-arn';
@@ -113,15 +112,14 @@ export class GremlinCsvConverter extends cdk.Construct {
   private defineLambdaFunction(
     role: iam.Role, 
     convertersLayer: lambda.ILayerVersion,
-    environment: {[key: string]: string;}): PythonFunction {
+    environment: {[key: string]: string;}): lambda.Function {
 
-      const func = new PythonFunction(this, `lambda-function`, {
+      const func = new lambda.Function(this, `lambda-function`, {
         functionName: `${this.props.deployment.Prefix}-${this.props.eventsName}-gremlin-csv-converter`,
         description: `Converts ${this.props.eventsName} to Gremlin CSV and submits for loading for ${this.props.deployment.Project} in ${this.props.deployment.Environment}`,
-        entry: `./assets/lambdas/gremlin-csv-converter`,
+        code: lambda.Code.fromAsset(`./assets/lambdas/gremlin-csv-converter`),
         runtime: lambda.Runtime.PYTHON_3_8,
-        index: 'lambda-handler.py',
-        handler: 'main',
+        handler: 'lambda-handler.main',
         environment: environment,
         layers: [this.props.lambdaLayersVersions.xray, convertersLayer],
         role: role,

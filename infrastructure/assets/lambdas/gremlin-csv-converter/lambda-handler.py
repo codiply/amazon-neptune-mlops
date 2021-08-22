@@ -4,7 +4,7 @@ import json
 
 from urllib.parse import unquote
 from aws_xray_sdk.core import patch_all
-from converters import GremlinCsvConverters
+from custom.converters import GremlinCsvConverters
 
 patch_all(double_patch=True)
 
