@@ -5,9 +5,11 @@ import * as iam from '@aws-cdk/aws-iam';
 import * as logs from '@aws-cdk/aws-logs';
 import { DeploymentConfig } from '../config/deployment-config';
 import { ServicePrincipals } from '../constants/service-principals';
+import { CommonConfig } from '../config/sections/common';
 
 export interface EcsServiceProps {
   readonly deployment: DeploymentConfig;
+  readonly commonConfig: CommonConfig;
   readonly ecsCluster: ecs.Cluster;
   readonly serviceName: string;
   readonly memoryLimitMiB: number;
@@ -18,7 +20,6 @@ export interface EcsServiceProps {
   readonly desiredCount: number;
   readonly securityGroups?: ec2.SecurityGroup[];
   readonly awsManagedPolicyNames?: string[];
-  readonly enableXray?: boolean
 }
   
 export class EcsService extends cdk.Construct {
@@ -57,7 +58,7 @@ export class EcsService extends cdk.Construct {
       }),
     });
 
-    if (props.enableXray) {
+    if (props.commonConfig.XRayEnabled) {
       const xrayContainer = taskDefinition.addContainer("xray-container", {
         containerName: 'xray-container',
         image: ecs.ContainerImage.fromRegistry("amazon/aws-xray-daemon:3.3.2"),
@@ -76,7 +77,17 @@ export class EcsService extends cdk.Construct {
       cluster: props.ecsCluster,
       taskDefinition: taskDefinition,
       desiredCount: props.desiredCount,
-      securityGroups: props.securityGroups
+      securityGroups: props.securityGroups, 
+      capacityProviderStrategies: [
+        {
+          capacityProvider: 'FARGATE',
+          weight: this.props.commonConfig.EcsCapacityProviderFargateWeight
+        },
+        {
+          capacityProvider: 'FARGATE_SPOT',
+          weight: this.props.commonConfig.EcsCapacityProviderFargateSpotWeight
+        }
+      ]
     });
   }
 
@@ -99,7 +110,7 @@ export class EcsService extends cdk.Construct {
 
     this.props.policyStatements.forEach(statement => role.addToPolicy(statement));
 
-    if (this.props.enableXray) {
+    if (this.props.commonConfig.XRayEnabled) {
       role.addManagedPolicy(iam.ManagedPolicy.fromAwsManagedPolicyName('AWSXRayDaemonWriteAccess'));
     }
     if (this.props.awsManagedPolicyNames) {

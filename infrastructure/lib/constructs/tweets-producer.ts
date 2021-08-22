@@ -39,6 +39,7 @@ export class TweetsProducer extends cdk.Construct {
 
     new EcsService(this, 'tweets-producer-ecs-service', {
       deployment: props.deployment,
+      commonConfig: props.commonConfig,
       ecsCluster: props.ecsCluster,
       serviceName: 'tweets-producer',
       memoryLimitMiB: props.tweetsProducerConfig.MemoryLimitMiB,
@@ -47,7 +48,6 @@ export class TweetsProducer extends cdk.Construct {
       containerImageDirectory: './assets/containers/tweets-producer/',
       environment: environment,
       desiredCount: 1,
-      enableXray: props.commonConfig.XRayEnabled
     });
   }
 

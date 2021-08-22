@@ -58,6 +58,7 @@ export class GremlinCsvLoader extends cdk.Construct {
     if (props.gremlinCsvLoaderConfig.Enabled) {
       new EcsService(this, 'gremlin-csv-loader-ecs-service', {
         deployment: props.deployment,
+        commonConfig: props.commonConfig,
         ecsCluster: props.ecsCluster,
         serviceName: 'gremlin-csv-loader',
         memoryLimitMiB: props.gremlinCsvLoaderConfig.MemoryLimitMiB,
@@ -66,7 +67,6 @@ export class GremlinCsvLoader extends cdk.Construct {
         containerImageDirectory: './assets/containers/gremlin-csv-loader/',
         environment: environment,
         desiredCount: 1,
-        enableXray: props.commonConfig.XRayEnabled,
         securityGroups: [props.databaseClientSecurityGroup]
       });
     }

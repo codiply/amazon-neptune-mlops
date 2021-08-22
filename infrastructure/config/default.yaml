@@ -1,5 +1,7 @@
 Common:
   XRayEnabled: false
+  EcsCapacityProviderFargateWeight: 0
+  EcsCapacityProviderFargateSpotWeight: 1
 EcsCluster:
   ContainerInsightsEnabled: true
 EventFirehose:
@@ -27,7 +29,7 @@ NeptuneNotebookEfs:
 Tweets:
   S3PathPrefix: 'tweets'
 TweetsProducer:
-  Enabled: false
+  Enabled: true
   Filter: 'aws'
   MemoryLimitMiB: 512
   Cpu: 256
@@ -44,7 +46,7 @@ Vpc:
 WikimediaEvents:
   S3PathPrefix: 'wikimedia-events'
 WikimediaEventsProducer:
-  Enabled: true
+  Enabled: false
   WikiRegex: 'enwiki'
   MemoryLimitMiB: 512
   Cpu: 256

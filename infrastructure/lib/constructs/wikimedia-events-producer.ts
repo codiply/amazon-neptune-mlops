@@ -32,6 +32,7 @@ export class WikimediaEventsProducer extends cdk.Construct {
 
     new EcsService(this, 'tweets-producer-ecs-service', {
       deployment: props.deployment,
+      commonConfig: props.commonConfig,
       ecsCluster: props.ecsCluster,
       serviceName: 'wikimedia-events-producer',
       memoryLimitMiB: props.wikimediaEventsProducerConfig.MemoryLimitMiB,
@@ -39,8 +40,7 @@ export class WikimediaEventsProducer extends cdk.Construct {
       policyStatements: policyStatements,
       containerImageDirectory: './assets/containers/wikimedia-events-producer/',
       environment: environment,
-      desiredCount: 1,
-      enableXray: props.commonConfig.XRayEnabled
+      desiredCount: 1
     });
   }
 
