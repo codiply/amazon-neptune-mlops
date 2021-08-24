@@ -29,7 +29,7 @@ NeptuneNotebookEfs:
 Tweets:
   S3PathPrefix: 'tweets'
 TweetsProducer:
-  Enabled: false
+  Enabled: true
   Filter: 'aws'
   MemoryLimitMiB: 512
   Cpu: 256
