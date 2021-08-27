@@ -8,6 +8,7 @@ export interface LambdaLayersProps extends cdk.StackProps {
 }
 
 export interface LambdaLayersVersions {
+  readonly benedict: lambda.LayerVersion;
   readonly requests: lambda.LayerVersion;
   readonly xray: lambda.LayerVersion;
 }
@@ -30,7 +31,14 @@ export class LambdaLayersStack extends cdk.Stack {
       compatibleRuntimes: [lambda.Runtime.PYTHON_3_8]
     });
 
+    const benedictLambdaLayer = new PythonLayerVersion(this, 'benedict-lambda-layer', {
+      layerVersionName: `${props.deployment.Prefix}-benedict`,
+      entry: './assets/lambda-layers/benedict',
+      compatibleRuntimes: [lambda.Runtime.PYTHON_3_8]
+    });
+
     this.versions = {
+      benedict: benedictLambdaLayer,
       requests: requestsLambdaLayer,
       xray: xrayLambdaLayer
     }

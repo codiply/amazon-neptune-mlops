@@ -11,7 +11,6 @@ import { ServicePrincipals } from '../constants/service-principals';
 import { S3Paths } from '../constants/s3-paths';
 import { GremlinCsvConfig } from '../config/sections/gremlin-csv';
 import { GremlinCsvConverterConfig } from '../config/sections/gremlin-csv-converter';
-import { LambdaLayersVersions } from '../stacks/lambda-layers';
 import { ResourceArn } from '../constants/resource-arn';
 import { ResourceNames } from '../constants/resource-names';
 
@@ -25,7 +24,8 @@ export interface GremlinCsvConverterProps {
   readonly s3Bucket: s3.Bucket;
   readonly loaderQueue: sqs.Queue;
   readonly convertersLayerAssetPath: string;
-  readonly lambdaLayersVersions: LambdaLayersVersions;
+  readonly xrayLambdaLayer: lambda.ILayerVersion;
+  readonly extraLambdaLayers?: lambda.ILayerVersion[];
 }
   
 export class GremlinCsvConverter extends cdk.Construct {
@@ -113,6 +113,11 @@ export class GremlinCsvConverter extends cdk.Construct {
     role: iam.Role, 
     convertersLayer: lambda.ILayerVersion,
     environment: {[key: string]: string;}): lambda.Function {
+      let layers = [this.props.xrayLambdaLayer, convertersLayer]
+
+      if (this.props.extraLambdaLayers) {
+        layers.push(...this.props.extraLambdaLayers)
+      }
 
       const func = new lambda.Function(this, `lambda-function`, {
         functionName: `${this.props.deployment.Prefix}-${this.props.eventsName}-gremlin-csv-converter`,
@@ -121,7 +126,7 @@ export class GremlinCsvConverter extends cdk.Construct {
         runtime: lambda.Runtime.PYTHON_3_8,
         handler: 'lambda-handler.main',
         environment: environment,
-        layers: [this.props.lambdaLayersVersions.xray, convertersLayer],
+        layers: layers,
         role: role,
         timeout: cdk.Duration.seconds(this.props.gremlinCsvConverter.LambdaTimeoutSeconds),
         logRetention: logs.RetentionDays.THREE_DAYS,

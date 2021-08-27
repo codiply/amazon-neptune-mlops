@@ -39,7 +39,8 @@ export class TweetsGremlinCsvConverterStack extends cdk.Stack {
       s3Bucket: props.s3Bucket,
       loaderQueue: props.loaderQueue,
       convertersLayerAssetPath: './assets/lambda-layers/gremlin-csv-converter-tweets',
-      lambdaLayersVersions: props.lambdaLayersVersions 
+      xrayLambdaLayer: props.lambdaLayersVersions.xray,
+      extraLambdaLayers: [props.lambdaLayersVersions.benedict]
     });
   }
 }
