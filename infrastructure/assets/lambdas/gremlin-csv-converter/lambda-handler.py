@@ -34,10 +34,13 @@ def process_content_with_converter(content_json, converter_type, converter_name,
     output_key = "{}{}-{}-{}".format(output_path, original_key_suffix, converter_type, converter_name)
     converted_lines = [converter.header()]
     for line in content_json:
-        new_lines = converter.convert(line)
-        if new_lines:
-            for line in new_lines:
-                converted_lines.append(line)
+        try:
+            new_lines = converter.convert(line)
+            if new_lines:
+                for line in new_lines:
+                    converted_lines.append(line)
+        except Exception as e:
+            print('Error: {}'.format(e))
     converted_content = "\n".join(converted_lines)
     s3_client.put_object(Body=converted_content.encode('utf-8'), Bucket=s3_bucket, Key=output_key)
     return output_key
