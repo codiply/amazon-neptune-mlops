@@ -34,7 +34,9 @@ export class Networking extends cdk.Construct {
           name: 'private',
           subnetType: ec2.SubnetType.PRIVATE
         },
-      ]
+      ],
+      enableDnsHostnames: true,
+      enableDnsSupport: true
     });
     cdk.Tags.of(vpc).add('Name', `${props.deployment.Prefix}-vpc`);
 

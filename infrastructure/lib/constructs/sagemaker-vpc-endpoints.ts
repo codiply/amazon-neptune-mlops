@@ -35,7 +35,8 @@ export class SagemakerVpcEndpoints extends cdk.Construct {
       serviceName: `com.amazonaws.${cdk.Aws.REGION}.sagemaker.runtime`,
       vpcEndpointType: ec2.VpcEndpointType.INTERFACE,
       subnetIds: props.vpc.privateSubnets.map(x => x.subnetId),
-      securityGroupIds: [endpointSecurityGroup.securityGroupId]
+      securityGroupIds: [endpointSecurityGroup.securityGroupId],
+      privateDnsEnabled: true
     });
 
     new ec2.CfnVPCEndpoint(this, 'vpc-endpoint-sagemaker-api', {
@@ -43,7 +44,8 @@ export class SagemakerVpcEndpoints extends cdk.Construct {
       serviceName: `com.amazonaws.${cdk.Aws.REGION}.sagemaker.api`,
       vpcEndpointType: ec2.VpcEndpointType.INTERFACE,
       subnetIds: props.vpc.privateSubnets.map(x => x.subnetId),
-      securityGroupIds: [endpointSecurityGroup.securityGroupId]
+      securityGroupIds: [endpointSecurityGroup.securityGroupId],
+      privateDnsEnabled: true
     });
   }
 }
