@@ -13,6 +13,8 @@ export interface NeptuneDatabaseProps {
   readonly vpc: ec2.Vpc;
   readonly loaderRole: iam.Role;
   readonly neptuneSagemakerRole: iam.Role;
+  readonly sagemakerExecutionRole: iam.Role;
+  readonly sagemakerVpcEndpointClientSecurityGroup: ec2.SecurityGroup;
 }
   
 export class NeptuneDatabase extends cdk.Construct {
@@ -57,7 +59,7 @@ export class NeptuneDatabase extends cdk.Construct {
       clusterParameterGroupName: `${props.deployment.Prefix}-cluster-parameter-group`,
       description: `Parameter group for database cluster for project ${props.deployment.Project} in ${props.deployment.Environment}`,
       parameters: {
-        neptune_ml_iam_role: ResourceArn.sagemakerExecutionRole(props.deployment)
+        neptune_ml_iam_role: props.sagemakerExecutionRole.roleArn
       }
     });
 
@@ -65,7 +67,7 @@ export class NeptuneDatabase extends cdk.Construct {
       dbClusterName: `${props.deployment.Prefix}-db-cluster`,
       vpc: props.vpc,
       instanceType: neptune.InstanceType.of(props.neptuneConfig.InstanceType),
-      securityGroups: [databaseSecurityGroup],
+      securityGroups: [databaseSecurityGroup, props.sagemakerVpcEndpointClientSecurityGroup],
       subnetGroup: subnetGroup,
       parameterGroup: parameterGroup,
       clusterParameterGroup: clusterParameterGroup,

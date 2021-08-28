@@ -9,6 +9,7 @@ import { VpcConfig } from '../config/sections/vpc';
 import { NeptuneNotebookEfsConfig } from '../config/sections/neptune-notebook-efs';
 import { EcsClusterConfig } from '../config/sections/ecs-cluster';
 import { ResourceNames } from '../constants/resource-names';
+import { SagemakerVpcEndpoints } from '../constructs/sagemaker-vpc-endpoints';
 
 export interface BaseStackProps extends cdk.StackProps {
   readonly deployment: DeploymentConfig;
@@ -19,6 +20,7 @@ export interface BaseStackProps extends cdk.StackProps {
 
 export class BaseStack extends cdk.Stack {
   public readonly vpc: ec2.Vpc;
+  public readonly sagemakerVpcEndpointClientSecurityGroup: ec2.SecurityGroup;
   public readonly neptuneNotebookEfsClientSecurityGroup: ec2.SecurityGroup;
   public readonly neptuneNotebookEfsFileSystemId: string;
   public readonly ecsCluster: ecs.Cluster;
@@ -32,6 +34,12 @@ export class BaseStack extends cdk.Stack {
       vpcConfig: props.vpcConfig
     });
     this.vpc = networking.vpc;
+
+    const sagemakerVpcEndpoints = new SagemakerVpcEndpoints(this, 'sagemaker-vpc-endpoints', {
+      deployment: props.deployment,
+      vpc: networking.vpc
+    });
+    this.sagemakerVpcEndpointClientSecurityGroup = sagemakerVpcEndpoints.endpointClientSecurityGroup;
 
     const neptuneNotebookPersistence = new NeptuneNotebookPersistence(this, 'neptune-notebook-persistence', {
       deployment: props.deployment,

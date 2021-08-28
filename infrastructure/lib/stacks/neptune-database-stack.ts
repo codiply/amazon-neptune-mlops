@@ -22,6 +22,8 @@ export interface NeptuneDatabaseStackProps extends cdk.StackProps {
   readonly ecsCluster: ecs.Cluster;
   readonly s3Bucket: s3.Bucket;
   readonly neptuneSagemakerRole: iam.Role;
+  readonly sagemakerExecutionRole: iam.Role;
+  readonly sagemakerVpcEndpointClientSecurityGroup: ec2.SecurityGroup;
 }
 
 export class NeptuneDatabaseStack extends cdk.Stack {
@@ -43,7 +45,9 @@ export class NeptuneDatabaseStack extends cdk.Stack {
       neptuneConfig: props.neptuneConfig,
       vpc: props.vpc,
       loaderRole: loaderRole,
-      neptuneSagemakerRole: props.neptuneSagemakerRole
+      neptuneSagemakerRole: props.neptuneSagemakerRole,
+      sagemakerExecutionRole: props.sagemakerExecutionRole,
+      sagemakerVpcEndpointClientSecurityGroup: props.sagemakerVpcEndpointClientSecurityGroup
     });
     this.cluster = neptuneDatabase.cluster;
     this.databaseClientSecurityGroup = neptuneDatabase.databaseClientSecurityGroup;

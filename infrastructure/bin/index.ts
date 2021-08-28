@@ -44,7 +44,9 @@ const neptuneDatabaseStack = new NeptuneDatabaseStack(app, `${config.Deployment.
   vpc: baseStack.vpc,
   ecsCluster: baseStack.ecsCluster,
   s3Bucket: baseStack.s3Bucket,
-  neptuneSagemakerRole: iamRoles.roles.neptuneSagemakerRole
+  neptuneSagemakerRole: iamRoles.roles.neptuneSagemakerRole,
+  sagemakerExecutionRole: iamRoles.roles.sagemakerExecutionRole,
+  sagemakerVpcEndpointClientSecurityGroup: baseStack.sagemakerVpcEndpointClientSecurityGroup
 });
 
 new NeptuneNotebookStack(app, `${config.Deployment.Prefix}-neptune-notebook-stack`, {
