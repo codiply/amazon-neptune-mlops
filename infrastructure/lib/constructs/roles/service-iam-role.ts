@@ -9,8 +9,9 @@ export interface ServiceIamRoleProps {
   readonly shortName: string;
   readonly fullName: string;
   readonly principalService: string;
-  readonly policyStatements: iam.PolicyStatement[];
+  readonly policyStatements?: iam.PolicyStatement[];
   readonly awsManagedPolicyNames?: string[];
+  readonly customerManagedPolicies?: iam.Policy[];
 }
   
 export class ServiceIamRole extends cdk.Construct {
@@ -24,12 +25,19 @@ export class ServiceIamRole extends cdk.Construct {
       description: `Role for ${props.fullName} for ${props.deployment.Project} in ${props.deployment.Environment}`,
       assumedBy: new iam.ServicePrincipal(props.principalService),
     });
-
-    props.policyStatements.forEach(statement => role.addToPolicy(statement));
+ 
+    if (props.policyStatements) {
+      props.policyStatements.forEach(statement => role.addToPolicy(statement));
+    }
 
     if (props.awsManagedPolicyNames) {
       props.awsManagedPolicyNames.forEach(name => 
         role.addManagedPolicy(iam.ManagedPolicy.fromAwsManagedPolicyName(name)));
+    }
+
+    if (props.customerManagedPolicies) {
+      props.customerManagedPolicies.forEach(policy =>
+        policy.attachToRole(role));
     }
   }
 }
