@@ -2,8 +2,8 @@ import * as cdk from '@aws-cdk/core';
 import * as iam from '@aws-cdk/aws-iam';
 import { DeploymentConfig } from '../../config/deployment-config';
 import { ServicePrincipals } from '../../constants/service-principals';
-import { ServiceIamRole } from './service-iam-role';
 import { NeptuneSageMakerPolicy } from '../policies/neptune-sagemaker-policy';
+import { ResourceNames } from '../../constants/resource-names';
 
 export interface NeptuneSagemakerRoleProps {
   readonly deployment: DeploymentConfig;
@@ -19,14 +19,14 @@ export class NeptuneSagemakerRole extends cdk.Construct {
       deployment: props.deployment
     });
 
-    const serviceIamRole = new ServiceIamRole(this, 'service-iam-role', {
-      deployment: props.deployment,
-      shortName: 'neptune-sagameker',
-      fullName: 'Neptune SageMaker',
-      principalService: ServicePrincipals.RDS,
-      customerManagedPolicies: [policy.policy]
+    const role = new iam.Role(this, 'role', {
+      roleName: ResourceNames.neptuneSagemakerRole(props.deployment),
+      description: `Role that Neptune ML uses for access to the resources it needs for ${props.deployment.Project} in ${props.deployment.Environment}`,
+      assumedBy: new iam.ServicePrincipal(ServicePrincipals.RDS),
     });
 
-    this.role = serviceIamRole.role;
+    policy.policy.attachToRole(role);
+
+    this.role = role;
   }
 }

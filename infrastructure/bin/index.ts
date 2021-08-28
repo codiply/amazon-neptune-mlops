@@ -43,7 +43,8 @@ const neptuneDatabaseStack = new NeptuneDatabaseStack(app, `${config.Deployment.
   gremlinCsvLoaderConfig: config.GremlinCsvLoader,
   vpc: baseStack.vpc,
   ecsCluster: baseStack.ecsCluster,
-  s3Bucket: baseStack.s3Bucket
+  s3Bucket: baseStack.s3Bucket,
+  neptuneSagemakerRole: iamRoles.roles.neptuneSagemakerRole
 });
 
 new NeptuneNotebookStack(app, `${config.Deployment.Prefix}-neptune-notebook-stack`, {

@@ -39,5 +39,7 @@ export class ServiceIamRole extends cdk.Construct {
       props.customerManagedPolicies.forEach(policy =>
         policy.attachToRole(role));
     }
+
+    this.role = role;
   }
 }

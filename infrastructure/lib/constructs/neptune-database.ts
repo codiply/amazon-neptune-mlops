@@ -5,12 +5,14 @@ import * as neptune from '@aws-cdk/aws-neptune';
 import { DeploymentConfig } from '../config/deployment-config';
 import { NeptuneConfig } from '../config/sections/neptune';
 import { Constants } from '../constants/constants';
+import { ResourceArn } from '../constants/resource-arn';
 
 export interface NeptuneDatabaseProps {
   readonly deployment: DeploymentConfig;
   readonly neptuneConfig: NeptuneConfig;
   readonly vpc: ec2.Vpc;
   readonly loaderRole: iam.Role;
+  readonly neptuneSagemakerRole: iam.Role;
 }
   
 export class NeptuneDatabase extends cdk.Construct {
@@ -51,6 +53,14 @@ export class NeptuneDatabase extends cdk.Construct {
       }
     });
 
+    const clusterParameterGroup = new neptune.ClusterParameterGroup(this, 'database-cluster-parameter-group', {
+      clusterParameterGroupName: `${props.deployment.Prefix}-cluster-parameter-group`,
+      description: `Parameter group for database cluster for project ${props.deployment.Project} in ${props.deployment.Environment}`,
+      parameters: {
+        neptune_ml_iam_role: ResourceArn.sagemakerExecutionRole(props.deployment)
+      }
+    });
+
     const cluster = new neptune.DatabaseCluster(this, 'neptune-database-cluster', {
       dbClusterName: `${props.deployment.Prefix}-db-cluster`,
       vpc: props.vpc,
@@ -58,7 +68,8 @@ export class NeptuneDatabase extends cdk.Construct {
       securityGroups: [databaseSecurityGroup],
       subnetGroup: subnetGroup,
       parameterGroup: parameterGroup,
-      associatedRoles: [props.loaderRole],
+      clusterParameterGroup: clusterParameterGroup,
+      associatedRoles: [props.loaderRole, props.neptuneSagemakerRole],
       removalPolicy: cdk.RemovalPolicy.DESTROY
     });
     this.cluster = cluster;
