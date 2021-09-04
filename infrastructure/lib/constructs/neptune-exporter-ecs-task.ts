@@ -23,6 +23,8 @@ export interface NeptuneExporterEcsTaskDefinitionProps {
 export class NeptuneExporterEcsTaskDefinition extends cdk.Construct {
   private props: NeptuneExporterEcsTaskDefinitionProps;
 
+  public taskDefinition: ecs.TaskDefinition;
+
   constructor(scope: cdk.Construct, id: string, props: NeptuneExporterEcsTaskDefinitionProps) {
     super(scope, id);
 
@@ -34,7 +36,7 @@ export class NeptuneExporterEcsTaskDefinition extends cdk.Construct {
       OUTPUT_S3_PATH: `s3://${ResourceNames.bucketName(props.deployment)}/${S3Paths.NEPTUNE_EXPORT}`
     };
 
-    new EcsTaskDefinition(this, 'task-definition', {
+    const taskDefinition = new EcsTaskDefinition(this, 'task-definition', {
       deployment: props.deployment,
       commonConfig: props.commonConfig,
       ecsCluster: props.ecsCluster,
@@ -46,6 +48,8 @@ export class NeptuneExporterEcsTaskDefinition extends cdk.Construct {
       environment: environment,
       desiredCount: 1
     });
+
+    this.taskDefinition = taskDefinition.taskDefinition;
   }
 
   private definePolicyStatements(): iam.PolicyStatement[] {
