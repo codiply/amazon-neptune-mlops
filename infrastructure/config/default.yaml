@@ -20,6 +20,9 @@ GremlinCsvLoader:
 Neptune:
   InstanceType: 'db.t3.medium'
   # InstanceType: 'db.r5.large'
+NeptuneExporter:
+  MemoryLimitMiB: 512
+  Cpu: 256
 NeptuneNotebook:
   InstanceType: 'ml.t3.medium'
   PersistentDirectory: 'Persistent'

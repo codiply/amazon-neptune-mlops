@@ -7,7 +7,7 @@ import { NeptuneSagemakerRole } from '../constructs/roles/neptune-sagemaker-role
 import { SagemakerExecutionRole } from '../constructs/roles/sagemaker-execution-role';
 
 
-export interface IamRolesProps extends cdk.StackProps {
+export interface IamRolesStackProps extends cdk.StackProps {
   readonly deployment: DeploymentConfig;
 }
 
@@ -19,7 +19,7 @@ export interface IamRoles {
 export class IamRolesStack extends cdk.Stack {
   public readonly roles: IamRoles;
 
-  constructor(scope: cdk.App, id: string, props: IamRolesProps) {
+  constructor(scope: cdk.App, id: string, props: IamRolesStackProps) {
     super(scope, id, props);
 
     new GlueRole(this, 'glue-role', {

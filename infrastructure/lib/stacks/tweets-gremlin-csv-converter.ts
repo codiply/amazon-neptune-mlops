@@ -10,7 +10,7 @@ import { GremlinCsvConfig } from '../config/sections/gremlin-csv';
 import { GremlinCsvConverterConfig } from '../config/sections/gremlin-csv-converter';
 import { LambdaLayersVersions } from './lambda-layers';
 
-export interface TweetsGremlinCsvConverterProps extends cdk.StackProps {
+export interface TweetsGremlinCsvConverterStackProps extends cdk.StackProps {
   readonly deployment: DeploymentConfig;
   readonly commonConfig: CommonConfig;
   readonly gremlinCsvConfig: GremlinCsvConfig;
@@ -22,12 +22,8 @@ export interface TweetsGremlinCsvConverterProps extends cdk.StackProps {
 }
 
 export class TweetsGremlinCsvConverterStack extends cdk.Stack {
-  private props: TweetsGremlinCsvConverterProps;
-
-  constructor(scope: cdk.App, id: string, props: TweetsGremlinCsvConverterProps) {
+  constructor(scope: cdk.App, id: string, props: TweetsGremlinCsvConverterStackProps) {
     super(scope, id, props);
-
-    this.props = props;
 
     new GremlinCsvConverter(this, 'gremlin-csv-converter', {
       deployment: props.deployment,

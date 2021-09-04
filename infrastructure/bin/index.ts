@@ -10,6 +10,7 @@ import { WikimediaEventsGremlinCsvConverterStack } from '../lib/stacks/wikimedia
 import { LambdaLayersStack } from '../lib/stacks/lambda-layers';
 import { TweetsGremlinCsvConverterStack } from '../lib/stacks/tweets-gremlin-csv-converter';
 import { IamRolesStack } from '../lib/stacks/iam-roles';
+import { MlPipelineStack } from '../lib/stacks/ml-pipeline-stack';
 
 const app = new cdk.App();
 let environmentName = app.node.tryGetContext('config');
@@ -17,7 +18,7 @@ let environmentName = app.node.tryGetContext('config');
 const config: Config = getConfig(environmentName, './config/');
 const env  = { account: config.Deployment.AWSAccountID, region: config.Deployment.AWSRegion };
 
-const baseStack = new BaseStack(app, `${config.Deployment.Prefix}-base-stack`, {
+const baseStack = new BaseStack(app, `${config.Deployment.Prefix}-base`, {
   env: env,
   deployment: config.Deployment,
   vpcConfig: config.Vpc,
@@ -25,17 +26,17 @@ const baseStack = new BaseStack(app, `${config.Deployment.Prefix}-base-stack`, {
   ecsClusterConfig: config.EcsCluster
 });
 
-const lambdaLayers = new LambdaLayersStack(app, `${config.Deployment.Prefix}-lambda-layers-stack`, {
+const lambdaLayers = new LambdaLayersStack(app, `${config.Deployment.Prefix}-lambda-layers`, {
   env: env,
   deployment: config.Deployment
 });
 
-const iamRoles = new IamRolesStack(app, `${config.Deployment.Prefix}-iam-roles-stack`, {
+const iamRoles = new IamRolesStack(app, `${config.Deployment.Prefix}-iam-roles`, {
   env: env,
   deployment: config.Deployment
 });
 
-const neptuneDatabaseStack = new NeptuneDatabaseStack(app, `${config.Deployment.Prefix}-neptune-database-stack`, { 
+const neptuneDatabaseStack = new NeptuneDatabaseStack(app, `${config.Deployment.Prefix}-neptune-database`, { 
   env: env,
   deployment: config.Deployment,
   commonConfig: config.Common,
@@ -49,7 +50,7 @@ const neptuneDatabaseStack = new NeptuneDatabaseStack(app, `${config.Deployment.
   sagemakerVpcEndpointClientSecurityGroup: baseStack.sagemakerVpcEndpointClientSecurityGroup
 });
 
-new NeptuneNotebookStack(app, `${config.Deployment.Prefix}-neptune-notebook-stack`, {
+new NeptuneNotebookStack(app, `${config.Deployment.Prefix}-neptune-notebook`, {
   env: env,
   deployment: config.Deployment,
   neptuneNotebookConfig: config.NeptuneNotebook,
@@ -105,4 +106,12 @@ new WikimediaEventsGremlinCsvConverterStack(app, `${config.Deployment.Prefix}-wi
   s3Bucket: baseStack.s3Bucket,
   loaderQueue: neptuneDatabaseStack.loaderQueue,
   lambdaLayersVersions: lambdaLayers.versions
+});
+
+new MlPipelineStack(app, `${config.Deployment.Prefix}-ml-pipeline`, {
+  env: env,
+  deployment: config.Deployment,
+  commonConfig: config.Common,
+  neptuneExporterConfig: config.NeptuneExporter,
+  ecsCluster: baseStack.ecsCluster
 });

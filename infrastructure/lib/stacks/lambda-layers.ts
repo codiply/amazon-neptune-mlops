@@ -3,7 +3,7 @@ import * as lambda from '@aws-cdk/aws-lambda';
 import { DeploymentConfig } from '../config/deployment-config';
 import { PythonLayerVersion } from '@aws-cdk/aws-lambda-python';
 
-export interface LambdaLayersProps extends cdk.StackProps {
+export interface LambdaLayersStackProps extends cdk.StackProps {
   readonly deployment: DeploymentConfig;
 }
 
@@ -16,7 +16,7 @@ export interface LambdaLayersVersions {
 export class LambdaLayersStack extends cdk.Stack {
   public versions: LambdaLayersVersions;
 
-  constructor(scope: cdk.App, id: string, props: LambdaLayersProps) {
+  constructor(scope: cdk.App, id: string, props: LambdaLayersStackProps) {
     super(scope, id, props);
 
     const xrayLambdaLayer = new PythonLayerVersion(this, 'xray-lambda-layer', {

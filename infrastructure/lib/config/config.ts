@@ -17,6 +17,7 @@ import { TwitterApiConfig, getConfig as getTwitterApiConfig } from './sections/t
 import { TweetsConfig, getConfig as getTweetsConfig } from './sections/tweets';
 import { GremlinCsvConverterConfig, getConfig as getGremlinCsvConverterConfig } from './sections/gremlin-csv-converter';
 import { GremlinCsvConfig, getConfig as getGremlinCsvConfig } from './sections/gremlin-csv';
+import { NeptuneExporterConfig, getConfig as getNeptuneExporterTaskConfig } from './sections/neptune-export-task';
 const yaml = require('js-yaml');
 
 export interface Config {
@@ -28,6 +29,7 @@ export interface Config {
     readonly GremlinCsvConverter: GremlinCsvConverterConfig;
     readonly GremlinCsvLoader: GremlinCsvLoaderConfig;
     readonly Neptune: NeptuneConfig;
+    readonly NeptuneExporter: NeptuneExporterConfig;
     readonly NeptuneNotebook: NeptuneNotebookConfig;
     readonly NeptuneNotebookEfs: NeptuneNotebookEfsConfig;
     readonly Vpc: VpcConfig;
@@ -53,6 +55,7 @@ export function getConfig(environmentName: string, configPath: string): Config
         GremlinCsvConverter: getGremlinCsvConverterConfig(getSection(configYaml, 'GremlinCsvConverter')),
         GremlinCsvLoader: getGremlinCsvLoaderConfig(getSection(configYaml, 'GremlinCsvLoader')),
         Neptune: getNeptuneConfig(getSection(configYaml, 'Neptune')),
+        NeptuneExporter: getNeptuneExporterTaskConfig(getSection(configYaml, 'NeptuneExporter')),
         NeptuneNotebook: getNeptuneNotebookConfig(getSection(configYaml, 'NeptuneNotebook')),
         NeptuneNotebookEfs: getNeptuneNotebookEfsConfig(getSection(configYaml, 'NeptuneNotebookEfs')),
         Tweets: getTweetsConfig(getSection(configYaml, 'Tweets')),

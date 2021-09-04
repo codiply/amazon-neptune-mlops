@@ -10,7 +10,7 @@ import { GremlinCsvConverterConfig } from '../config/sections/gremlin-csv-conver
 import { LambdaLayersVersions } from './lambda-layers';
 import { WikimediaEventsConfig } from '../config/sections/wikimedia-events';
 
-export interface WikimediaEventsGremlinCsvConverterProps extends cdk.StackProps {
+export interface WikimediaEventsGremlinCsvConverterStackProps extends cdk.StackProps {
   readonly deployment: DeploymentConfig;
   readonly commonConfig: CommonConfig;
   readonly gremlinCsvConfig: GremlinCsvConfig;
@@ -22,7 +22,7 @@ export interface WikimediaEventsGremlinCsvConverterProps extends cdk.StackProps 
 }
 
 export class WikimediaEventsGremlinCsvConverterStack extends cdk.Stack {
-  constructor(scope: cdk.App, id: string, props: WikimediaEventsGremlinCsvConverterProps) {
+  constructor(scope: cdk.App, id: string, props: WikimediaEventsGremlinCsvConverterStackProps) {
     super(scope, id, props);
     new GremlinCsvConverter(this, 'gremlin-csv-converter', {
       deployment: props.deployment,

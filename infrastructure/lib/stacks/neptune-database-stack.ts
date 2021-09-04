@@ -52,7 +52,7 @@ export class NeptuneDatabaseStack extends cdk.Stack {
     this.cluster = neptuneDatabase.cluster;
     this.databaseClientSecurityGroup = neptuneDatabase.databaseClientSecurityGroup;
 
-    const gremlinCsvLoader = new GremlinCsvLoader(this, 'gremlin-dsv-loader', {
+    const gremlinCsvLoader = new GremlinCsvLoader(this, 'gremlin-csv-loader', {
       deployment: props.deployment,
       commonConfig: props.commonConfig,
       gremlinCsvLoaderConfig: props.gremlinCsvLoaderConfig,
