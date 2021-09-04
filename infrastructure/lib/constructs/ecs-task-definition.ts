@@ -18,7 +18,6 @@ export interface EcsTaskDefinitionProps {
   readonly containerImageDirectory: string;
   readonly environment: { [key: string]: string; };
   readonly desiredCount: number;
-  readonly securityGroups?: ec2.SecurityGroup[];
   readonly awsManagedPolicyNames?: string[];
 }
   

@@ -113,5 +113,7 @@ new MlPipelineStack(app, `${config.Deployment.Prefix}-ml-pipeline`, {
   deployment: config.Deployment,
   commonConfig: config.Common,
   neptuneExporterConfig: config.NeptuneExporter,
-  ecsCluster: baseStack.ecsCluster
+  ecsCluster: baseStack.ecsCluster,
+  databaseClusterEndpoint: neptuneDatabaseStack.cluster.clusterEndpoint,
+  databaseClientSecurityGroup: neptuneDatabaseStack.databaseClientSecurityGroup,
 });

@@ -1,5 +1,7 @@
 import * as cdk from '@aws-cdk/core';
+import * as ec2 from '@aws-cdk/aws-ec2';
 import * as ecs from '@aws-cdk/aws-ecs';
+import * as neptune from '@aws-cdk/aws-neptune';
 import { DeploymentConfig } from '../config/deployment-config';
 import { NeptuneExporterEcsTaskDefinition } from '../constructs/neptune-exporter-ecs-task';
 import { NeptuneExporterConfig } from '../config/sections/neptune-export-task';
@@ -10,6 +12,8 @@ export interface MlPipelineStackProps extends cdk.StackProps {
   readonly commonConfig: CommonConfig;
   readonly neptuneExporterConfig: NeptuneExporterConfig;
   readonly ecsCluster: ecs.Cluster;
+  readonly databaseClusterEndpoint: neptune.Endpoint;
+  readonly databaseClientSecurityGroup: ec2.SecurityGroup;
 }
 
 export class MlPipelineStack extends cdk.Stack {
@@ -20,7 +24,9 @@ export class MlPipelineStack extends cdk.Stack {
       deployment: props.deployment,
       commonConfig: props.commonConfig,
       ecsCluster: props.ecsCluster,
-      neptuneExporterConfig: props.neptuneExporterConfig
+      neptuneExporterConfig: props.neptuneExporterConfig,
+      databaseClusterEndpoint: props.databaseClusterEndpoint,
+      databaseClientSecurityGroup: props.databaseClientSecurityGroup
     });
   }
 }
