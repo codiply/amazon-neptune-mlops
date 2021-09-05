@@ -22,7 +22,10 @@ export class SagemakerExecutionRole extends cdk.Construct {
     const role = new iam.Role(this, 'role', {
       roleName: ResourceNames.sagemakerExecutionRole(props.deployment),
       description: `Role that SageMaker uses for access to the resources it needs to work with Neptune ML for ${props.deployment.Project} in ${props.deployment.Environment}`,
-      assumedBy: new iam.ServicePrincipal(ServicePrincipals.SAGEMAKER),
+      assumedBy: new iam.CompositePrincipal(
+        new iam.ServicePrincipal(ServicePrincipals.RDS),
+        new iam.ServicePrincipal(ServicePrincipals.SAGEMAKER)
+      )
     });
 
     policy.policy.attachToRole(role);

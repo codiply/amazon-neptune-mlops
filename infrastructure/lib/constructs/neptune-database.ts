@@ -59,7 +59,7 @@ export class NeptuneDatabase extends cdk.Construct {
       clusterParameterGroupName: `${props.deployment.Prefix}-cluster-parameter-group`,
       description: `Parameter group for database cluster for project ${props.deployment.Project} in ${props.deployment.Environment}`,
       parameters: {
-        neptune_ml_iam_role: props.sagemakerExecutionRole.roleArn
+        neptune_ml_iam_role: props.neptuneSagemakerRole.roleArn
       }
     });
 

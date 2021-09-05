@@ -22,7 +22,10 @@ export class NeptuneSagemakerRole extends cdk.Construct {
     const role = new iam.Role(this, 'role', {
       roleName: ResourceNames.neptuneSagemakerRole(props.deployment),
       description: `Role that Neptune ML uses for access to the resources it needs for ${props.deployment.Project} in ${props.deployment.Environment}`,
-      assumedBy: new iam.ServicePrincipal(ServicePrincipals.RDS),
+      assumedBy: new iam.CompositePrincipal(
+        new iam.ServicePrincipal(ServicePrincipals.RDS),
+        new iam.ServicePrincipal(ServicePrincipals.SAGEMAKER)
+      )
     });
 
     policy.policy.attachToRole(role);

@@ -109,11 +109,11 @@ export class SageMakerExecutionPolicy extends cdk.Construct {
       new iam.PolicyStatement({
         effect: iam.Effect.ALLOW,
         actions: [
-          "s3:GetObject",
-          "s3:PutObject",
-          "s3:DeleteObject",
-          "s3:AbortMultipartUpload",
-          "s3:ListBucket"
+          's3:GetObject',
+          's3:PutObject',
+          's3:DeleteObject',
+          's3:AbortMultipartUpload',
+          's3:ListBucket'
         ],
         resources: [
           ResourceArn.bucket(props.deployment),
