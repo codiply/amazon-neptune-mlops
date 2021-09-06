@@ -61,7 +61,8 @@ def request_to_load(s3_files, load_id_dependencies):
             "region": aws_region,
             "failOnError": "FALSE",
             "queueRequest": "TRUE",
-            "dependencies": load_id_dependencies
+            "dependencies": load_id_dependencies,
+            "updateSingleCardinalityProperties": "TRUE" 
         }
 
         response = requests.post(loader_endpoint, json=request, timeout=30)

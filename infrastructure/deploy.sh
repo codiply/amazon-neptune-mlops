@@ -9,4 +9,4 @@ set -euo pipefail
 ./cdk.sh deploy '*-tweets-to-s3'
 ./cdk.sh deploy '*-tweets-gremlin-csv-converter'
 ./cdk.sh deploy '*-ml-pipeline'
-# ./cdk.sh deploy '*-notebook'
+./cdk.sh deploy '*-notebook'

@@ -55,7 +55,7 @@ def get_tweet_vertex_id(event):
 
 class UserVertexConverter(object):
     def header(self):
-        return "~id, ~label, screen_name:String"
+        return "~id, ~label, screen_name:String(single)"
     def convert(self, event):
         event = benedict(event)
 
@@ -91,7 +91,7 @@ class UserVertexConverter(object):
     
 class TweetVertexConverter(object):
     def header(self):
-        return "~id, ~label, text:String"
+        return "~id, ~label, text:String(single)"
     def convert(self, event):
         event = benedict(event)
         if 'id_str' in event:
@@ -108,7 +108,7 @@ class TweetVertexConverter(object):
 
 class HashtagVertexConverter(object):
     def header(self):
-        return "~id, ~label, text:String"
+        return "~id, ~label, text:String(single)"
     def convert(self, event):
         event = benedict(event)
         yield from self._convert_event(event)
