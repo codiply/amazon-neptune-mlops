@@ -31,6 +31,9 @@ NeptuneNotebookEfs:
   EnableAutomaticBackups: false
 Tweets:
   S3PathPrefix: 'tweets'
+TweetsGremlinCsvConverter:
+  AllowedLanguages:
+    - 'en'
 TweetsProducer:
   Enabled: true
   Filter: 'aws'

@@ -9,6 +9,7 @@ import { GremlinCsvConverter } from '../constructs/gremlin-csv-converter';
 import { GremlinCsvConfig } from '../config/sections/gremlin-csv';
 import { GremlinCsvConverterConfig } from '../config/sections/gremlin-csv-converter';
 import { LambdaLayersVersions } from './lambda-layers';
+import { TweetsGremlinCsvConverterConfig } from '../config/sections/tweets-gremlin-csv-converter';
 
 export interface TweetsGremlinCsvConverterStackProps extends cdk.StackProps {
   readonly deployment: DeploymentConfig;
@@ -16,6 +17,7 @@ export interface TweetsGremlinCsvConverterStackProps extends cdk.StackProps {
   readonly gremlinCsvConfig: GremlinCsvConfig;
   readonly gremlinCsvConverterConfig: GremlinCsvConverterConfig;
   readonly tweetsConfig: TweetsConfig;
+  readonly tweetsGremlinCsvConverterConfig: TweetsGremlinCsvConverterConfig;
   readonly s3Bucket: s3.Bucket;
   readonly loaderQueue: sqs.Queue;
   readonly lambdaLayersVersions: LambdaLayersVersions;
@@ -24,6 +26,10 @@ export interface TweetsGremlinCsvConverterStackProps extends cdk.StackProps {
 export class TweetsGremlinCsvConverterStack extends cdk.Stack {
   constructor(scope: cdk.App, id: string, props: TweetsGremlinCsvConverterStackProps) {
     super(scope, id, props);
+
+    const environment = {
+      ALLOWED_LANGUAGES: props.tweetsGremlinCsvConverterConfig.AllowedLanguages.join(",").toLowerCase()
+    }
 
     new GremlinCsvConverter(this, 'gremlin-csv-converter', {
       deployment: props.deployment,
@@ -35,6 +41,7 @@ export class TweetsGremlinCsvConverterStack extends cdk.Stack {
       s3Bucket: props.s3Bucket,
       loaderQueue: props.loaderQueue,
       convertersLayerAssetPath: './assets/lambda-layers/gremlin-csv-converter-tweets',
+      environment: environment,
       xrayLambdaLayer: props.lambdaLayersVersions.xray,
       extraLambdaLayers: [props.lambdaLayersVersions.benedict]
     });

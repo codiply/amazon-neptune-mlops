@@ -1,4 +1,7 @@
+import os
 from benedict import benedict
+
+allowed_languages = list(map(lambda x: x.lower(), os.environ['ALLOWED_LANGUAGES'].split(",")))
 
 def get_user_vertex_id_from_screen_name(screen_name):
     return "user:{}".format(screen_name.lower())
@@ -91,7 +94,8 @@ class UserVertexConverter(object):
     
 class TweetVertexConverter(object):
     def header(self):
-        return "~id, ~label, text:String(single)"
+        # return "~id, ~label, text:String(single)"
+        return "~id, ~label"
     def convert(self, event):
         event = benedict(event)
         if 'id_str' in event:
@@ -99,11 +103,13 @@ class TweetVertexConverter(object):
         if 'retweeted_status.id_str' in event:
             yield self._line_for_tweet(id_str=event['retweeted_status.id_str'], text=self._clean_text(event['retweeted_status.text']))
     def _clean_text(self, text):
-        return text.replace("\n", " ")
+        return text.replace("\n", " ").replace('"','""')
     def _line_for_tweet(self, id_str, text):
-        return "\"{vertex_id}\",tweet,\"{text}\"".format(
-                vertex_id=get_tweet_vertex_id_from_tweet_id(id_str),
-                text=text)
+        # return "\"{vertex_id}\",tweet,\"{text}\"".format(
+        #         vertex_id=get_tweet_vertex_id_from_tweet_id(id_str),
+        #         text=text)
+        return "\"{vertex_id}\",tweet".format(
+                vertex_id=get_tweet_vertex_id_from_tweet_id(id_str))
 
 
 class HashtagVertexConverter(object):
@@ -228,6 +234,9 @@ class GremlinCsvConverters(object):
     tag_edge_converter = TagEdgeConverter()
     reply_edge_converter = ReplyEdgeConverter()
     
+    def drop_event(self, event):
+        return not('lang' in event and event['lang'].lower() in allowed_languages)
+
     def to_vertexes(self):
         return [
             ('user', self.user_vertex_converter),

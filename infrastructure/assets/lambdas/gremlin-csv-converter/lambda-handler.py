@@ -30,15 +30,16 @@ def main(event, context):
         print(e)
         raise e
 
-def process_content_with_converter(content_json, converter_type, converter_name, converter, original_key_suffix):
+def process_content_with_converter(content_json, converter_type, converter_name, converter, drop_event, original_key_suffix):
     output_key = "{}{}-{}-{}".format(output_path, original_key_suffix, converter_type, converter_name)
     converted_lines = [converter.header()]
     for line in content_json:
         try:
-            new_lines = converter.convert(line)
-            if new_lines:
-                for line in new_lines:
-                    converted_lines.append(line)
+            if not drop_event(line):
+                new_lines = converter.convert(line)
+                if new_lines:
+                    for line in new_lines:
+                        converted_lines.append(line)
         except Exception as e:
             print('Error: {}'.format(e))
     converted_content = "\n".join(converted_lines)
@@ -52,10 +53,10 @@ def process_file(key):
     vertex_keys = []
     edge_keys = []
     for (converter_name, converter) in gremlin_csv_converters.to_vertexes():
-        output_key = process_content_with_converter(content_json, 'vertexes', converter_name, converter, original_key_suffix)
+        output_key = process_content_with_converter(content_json, 'vertexes', converter_name, converter, gremlin_csv_converters.drop_event, original_key_suffix)
         vertex_keys.append(output_key)
     for (converter_name, converter) in gremlin_csv_converters.to_edges():
-        output_key = process_content_with_converter(content_json, 'edges', converter_name, converter, original_key_suffix)
+        output_key = process_content_with_converter(content_json, 'edges', converter_name, converter, gremlin_csv_converters.drop_event, original_key_suffix)
         vertex_keys.append(output_key)
     loader_message = {
         "vertex_files": list(map(lambda x: "s3://{}/{}".format(s3_bucket, x), vertex_keys)),

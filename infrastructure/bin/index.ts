@@ -80,6 +80,7 @@ new TweetsGremlinCsvConverterStack(app, `${config.Deployment.Prefix}-tweets-grem
   gremlinCsvConfig: config.GremlinCsv,
   gremlinCsvConverterConfig: config.GremlinCsvConverter,
   tweetsConfig: config.Tweets,
+  tweetsGremlinCsvConverterConfig: config.TweetsGremlinCsvConverter,
   s3Bucket: baseStack.s3Bucket,
   loaderQueue: neptuneDatabaseStack.loaderQueue,
   lambdaLayersVersions: lambdaLayers.versions

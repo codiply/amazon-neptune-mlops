@@ -34,6 +34,7 @@ export class WikimediaEventsGremlinCsvConverterStack extends cdk.Stack {
       s3Bucket: props.s3Bucket,
       loaderQueue: props.loaderQueue,
       convertersLayerAssetPath: './assets/lambda-layers/gremlin-csv-converter-wikimedia-events',
+      environment: {},
       xrayLambdaLayer: props.lambdaLayersVersions.xray
     });
   }

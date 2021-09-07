@@ -49,6 +49,9 @@ class GremlinCsvConverters(object):
     title_vertex_converter = TitleVertexConverter()
     interaction_edge_converter = InteractionEdgeConverter()
     
+    def drop_event(self, event):
+        return False
+
     def to_vertexes(self):
         return [
             ('user', self.user_vertex_converter),

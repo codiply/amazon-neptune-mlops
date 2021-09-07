@@ -25,6 +25,7 @@ export interface GremlinCsvConverterProps {
   readonly loaderQueue: sqs.Queue;
   readonly convertersLayerAssetPath: string;
   readonly xrayLambdaLayer: lambda.ILayerVersion;
+  readonly environment: { [key: string]: string; };
   readonly extraLambdaLayers?: lambda.ILayerVersion[];
 }
   
@@ -47,7 +48,8 @@ export class GremlinCsvConverter extends cdk.Construct {
       LOADER_QUEUE_URL: props.loaderQueue.queueUrl,
       S3_BUCKET: ResourceNames.bucketName(props.deployment),
       INPUT_PATH: this.inputPath,
-      OUTPUT_PATH: this.outputPath
+      OUTPUT_PATH: this.outputPath,
+      ...props.environment
     };
 
     const convertersLayer = new lambda.LayerVersion(this, 'converters', {
