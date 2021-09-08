@@ -1,7 +1,16 @@
 import os
 from benedict import benedict
+from datetime import datetime, time
 
 allowed_languages = list(map(lambda x: x.lower(), os.environ['ALLOWED_LANGUAGES'].split(",")))
+
+def is_ascii_text(text):
+    try:
+        text.encode(encoding='utf-8').decode('ascii')
+    except UnicodeDecodeError:
+        return False
+    else:
+        return True
 
 def get_user_vertex_id_from_screen_name(screen_name):
     return "user:{}".format(screen_name.lower())
@@ -50,7 +59,8 @@ def get_user_mentions_user_vertex_ids(event):
 
 def get_hashtags_vertex_ids(event):
     if 'entities.hashtags' in event and event['entities.hashtags']:
-        return list(map(lambda x: get_hashtag_vertex_id_from_hashtag_text(x['text']), event['entities.hashtags']))
+        hastag_texts = filter(lambda x: is_ascii_text(x), map(lambda x: x['text'], event['entities.hashtags']))
+        return list(map(lambda x: get_hashtag_vertex_id_from_hashtag_text(x), hastag_texts))
     
 def get_tweet_vertex_id(event):
     if 'id_str' in event:
@@ -85,7 +95,6 @@ class UserVertexConverter(object):
                 for screen_name in user_mentions_screen_names:
                     yield self._line_for_screen_name(screen_name)
         
-        
     def _line_for_screen_name(self, screen_name):
         return "\"{vertex_id}\",user,\"{screen_name}\"".format(
                     vertex_id=get_user_vertex_id_from_screen_name(screen_name),
@@ -94,22 +103,22 @@ class UserVertexConverter(object):
     
 class TweetVertexConverter(object):
     def header(self):
-        # return "~id, ~label, text:String(single)"
-        return "~id, ~label"
+        return "~id,~label,text:String(single),timestamp:Long(single)"
     def convert(self, event):
         event = benedict(event)
         if 'id_str' in event:
-            yield self._line_for_tweet(id_str=event['id_str'], text=self._clean_text(event['text']))
+            yield self._line_for_tweet(event)
         if 'retweeted_status.id_str' in event:
-            yield self._line_for_tweet(id_str=event['retweeted_status.id_str'], text=self._clean_text(event['retweeted_status.text']))
+            yield self._line_for_tweet(event['retweeted_status'])
     def _clean_text(self, text):
-        return text.replace("\n", " ").replace('"','""')
-    def _line_for_tweet(self, id_str, text):
-        # return "\"{vertex_id}\",tweet,\"{text}\"".format(
-        #         vertex_id=get_tweet_vertex_id_from_tweet_id(id_str),
-        #         text=text)
-        return "\"{vertex_id}\",tweet".format(
-                vertex_id=get_tweet_vertex_id_from_tweet_id(id_str))
+        return text.replace("\n", " ").replace('"',"'")
+    def _line_for_tweet(self, event):
+        clean_text = self._clean_text(event['text'])
+        timestamp = int(datetime.strptime(event['created_at'], "%a %b %d %H:%M:%S %z %Y").timestamp())
+        return "\"{vertex_id}\",tweet,\"{text}\",{timestamp}".format(
+                vertex_id=get_tweet_vertex_id_from_tweet_id(event['id_str']),
+                text=clean_text,
+                timestamp=timestamp)
 
 
 class HashtagVertexConverter(object):
@@ -123,7 +132,9 @@ class HashtagVertexConverter(object):
     def _convert_event(self, event):
         if 'entities.hashtags' in event and event['entities.hashtags']:
             for tag in event['entities.hashtags']:
-                yield self._line_for_hashtag(tag['text'])
+                hashtag_text = tag['text']
+                if is_ascii_text(hashtag_text):
+                    yield self._line_for_hashtag(hashtag_text)
     def _line_for_hashtag(self, text):
         return "\"{vertex_id}\",hashtag,\"{text}\"".format(
                 vertex_id=get_hashtag_vertex_id_from_hashtag_text(text),
@@ -131,96 +142,106 @@ class HashtagVertexConverter(object):
     
 class TweetEdgeConverter(object):
     def header(self):
-        return "~id, ~from, ~to, ~label"
+        return "~id,~from,~to,~label,timestamp:Long(single)"
     def convert(self, event):
         event = benedict(event)
         if 'retweeted_status' in event:
             event = event['retweeted_status']
+        timestamp = int(datetime.strptime(event['created_at'], "%a %b %d %H:%M:%S %z %Y").timestamp())
         user_vertex_id = get_user_vertex_id(event)
         tweet_vertex_id = get_tweet_vertex_id(event)
         if user_vertex_id and tweet_vertex_id:
-            yield self._line_for_edge(user_vertex_id, tweet_vertex_id)
+            yield self._line_for_edge(user_vertex_id, tweet_vertex_id, timestamp)
             
-    def _line_for_edge(self, user_vertex_id, tweet_vertex_id):
-        return "\"{edge_id}\",\"{user_vertex_id}\",\"{tweet_vertex_id}\",tweet".format(
+    def _line_for_edge(self, user_vertex_id, tweet_vertex_id, timestamp):
+        return "\"{edge_id}\",\"{user_vertex_id}\",\"{tweet_vertex_id}\",tweet,{timestamp}".format(
                     edge_id="tweet:{}:{}".format(user_vertex_id, tweet_vertex_id),
                     user_vertex_id=user_vertex_id,
-                    tweet_vertex_id=tweet_vertex_id)
+                    tweet_vertex_id=tweet_vertex_id,
+                    timestamp=timestamp)
 
 class RetweetEdgeConverter(object):
     def header(self):
-        return "~id, ~from, ~to, ~label"
+        return "~id,~from,~to,~label,timestamp:Long(single)"
     def convert(self, event):
         event = benedict(event)
         if 'retweeted_status' in event:
+            timestamp = int(datetime.strptime(event['created_at'], "%a %b %d %H:%M:%S %z %Y").timestamp())
             user_vertex_id = get_user_vertex_id(event)
             tweet_vertex_id = get_tweet_vertex_id(event['retweeted_status'])
             if user_vertex_id and tweet_vertex_id:
                 return [
-                    "\"{edge_id}\",\"{user_vertex_id}\",\"{tweet_vertex_id}\",retweet".format(
+                    "\"{edge_id}\",\"{user_vertex_id}\",\"{tweet_vertex_id}\",retweet,{timestamp}".format(
                         edge_id="retweet:{}:{}".format(user_vertex_id, tweet_vertex_id),
                         user_vertex_id=user_vertex_id,
-                        tweet_vertex_id=tweet_vertex_id)
+                        tweet_vertex_id=tweet_vertex_id,
+                        timestamp=timestamp)
                 ]
 
             
 class MentionEdgeConverter(object):
     def header(self):
-        return "~id, ~from, ~to, ~label"
+        return "~id,~from,~to,~label,timestamp:Long(single)"
     def convert(self, event):
         event = benedict(event)
         if 'retweeted_status' in event:
             event = event['retweeted_status']
+        timestamp = int(datetime.strptime(event['created_at'], "%a %b %d %H:%M:%S %z %Y").timestamp())
         tweet_vertex_id = get_tweet_vertex_id(event)
         user_vertex_ids = get_user_mentions_user_vertex_ids(event)
         if tweet_vertex_id and user_vertex_ids:
             for user_vertex_id in user_vertex_ids:
-                yield self._line_for_edge(tweet_vertex_id, user_vertex_id)
+                yield self._line_for_edge(tweet_vertex_id, user_vertex_id, timestamp)
             
-    def _line_for_edge(self, tweet_vertex_id, user_vertex_id):
-        return "\"{edge_id}\",\"{tweet_vertex_id}\",\"{user_vertex_id}\",mention".format(
+    def _line_for_edge(self, tweet_vertex_id, user_vertex_id,timestamp):
+        return "\"{edge_id}\",\"{tweet_vertex_id}\",\"{user_vertex_id}\",mention,{timestamp}".format(
                     edge_id="mention:{}:{}".format(tweet_vertex_id, user_vertex_id),
                     tweet_vertex_id=tweet_vertex_id,  
-                    user_vertex_id=user_vertex_id)
+                    user_vertex_id=user_vertex_id,
+                    timestamp=timestamp)
     
 
 class TagEdgeConverter(object):
     def header(self):
-        return "~id, ~from, ~to, ~label"
+        return "~id,~from,~to,~label,timestamp:Long(single)"
     def convert(self, event):
         event = benedict(event)
         if 'retweeted_status' in event:
             event = event['retweeted_status']
+        timestamp = int(datetime.strptime(event['created_at'], "%a %b %d %H:%M:%S %z %Y").timestamp())
         tweet_vertex_id = get_tweet_vertex_id(event)
         hashtag_vertex_ids = get_hashtags_vertex_ids(event)
         if tweet_vertex_id and hashtag_vertex_ids:
             for hashtag_vertex_id in hashtag_vertex_ids:
-                yield self._line_for_edge(tweet_vertex_id, hashtag_vertex_id)
+                yield self._line_for_edge(tweet_vertex_id, hashtag_vertex_id, timestamp)
             
-    def _line_for_edge(self, tweet_vertex_id, hashtag_vertex_id):
-        return "\"{edge_id}\",\"{tweet_vertex_id}\",\"{hashtag_vertex_id}\",tag".format(
+    def _line_for_edge(self, tweet_vertex_id, hashtag_vertex_id, timestamp):
+        return "\"{edge_id}\",\"{tweet_vertex_id}\",\"{hashtag_vertex_id}\",tag,{timestamp}".format(
                     edge_id="tag:{}:{}".format(tweet_vertex_id, hashtag_vertex_id),
                     tweet_vertex_id=tweet_vertex_id,  
-                    hashtag_vertex_id=hashtag_vertex_id)
+                    hashtag_vertex_id=hashtag_vertex_id,
+                    timestamp=timestamp)
     
 
 class ReplyEdgeConverter(object):
     def header(self):
-        return "~id, ~from, ~to, ~label"
+        return "~id,~from,~to,~label,timestamp:Long(single)"
     def convert(self, event):
         event = benedict(event)
         if 'retweeted_status' in event:
             event = event['retweeted_status']
+        timestamp = int(datetime.strptime(event['created_at'], "%a %b %d %H:%M:%S %z %Y").timestamp())
         tweet_vertex_id = get_tweet_vertex_id(event)
         reply_to_user_vertex_id = get_in_reply_to_user_vertex_id(event)
         if tweet_vertex_id and reply_to_user_vertex_id:
-            yield self._line_for_edge(tweet_vertex_id, reply_to_user_vertex_id)
+            yield self._line_for_edge(tweet_vertex_id, reply_to_user_vertex_id, timestamp)
             
-    def _line_for_edge(self, tweet_vertex_id, user_vertex_id):
-        return "\"{edge_id}\",\"{tweet_vertex_id}\",\"{user_vertex_id}\",reply".format(
+    def _line_for_edge(self, tweet_vertex_id, user_vertex_id, timestamp):
+        return "\"{edge_id}\",\"{tweet_vertex_id}\",\"{user_vertex_id}\",reply,{timestamp}".format(
                     edge_id="reply:{}:{}".format(tweet_vertex_id, user_vertex_id),
                     tweet_vertex_id=tweet_vertex_id,  
-                    user_vertex_id=user_vertex_id)
+                    user_vertex_id=user_vertex_id,
+                    timestamp=timestamp)
 
     
     

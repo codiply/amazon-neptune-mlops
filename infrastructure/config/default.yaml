@@ -36,7 +36,7 @@ TweetsGremlinCsvConverter:
     - 'en'
 TweetsProducer:
   Enabled: true
-  Filter: 'aws'
+  Filter: '#aws'
   MemoryLimitMiB: 512
   Cpu: 256
 TwitterApi:
