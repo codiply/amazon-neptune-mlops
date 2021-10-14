@@ -29,7 +29,7 @@ export class NeptuneNotebook extends cdk.Construct {
     const notebookRole = this.defineNotebookRole();
 
     const lifecycleConfigName = `${this.props.deployment.Prefix}-notebook-instance-lifecycle-config`;
-    const lifecycleConfig = this.defineNotebookInstanceLifecycleConfig(lifecycleConfigName);
+    this.defineNotebookInstanceLifecycleConfig(lifecycleConfigName);
     
     this.defineNotebookInstance(notebookRole, lifecycleConfigName);
   }

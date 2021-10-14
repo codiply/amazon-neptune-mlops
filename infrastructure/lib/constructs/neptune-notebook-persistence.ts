@@ -12,15 +12,11 @@ export interface NeptuneNotebookPersistenceProps {
 }
   
 export class NeptuneNotebookPersistence extends cdk.Construct {
-  private readonly props: NeptuneNotebookPersistenceProps;
-
   public efsClientSecurityGroup: ec2.SecurityGroup;
   public efsFileSystemId: string;
 
   constructor(scope: cdk.Construct, id: string, props: NeptuneNotebookPersistenceProps) {
     super(scope, id);
-
-    this.props = props;
 
     const efsClientSecurityGroup = new ec2.SecurityGroup(this, 'efs-client-sg', {
       vpc: props.vpc,
